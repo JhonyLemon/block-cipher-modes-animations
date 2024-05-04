@@ -1,55 +1,128 @@
 import {Mode} from "./Mode";
-import {AnimationFrames} from "../AnimationFrames";
-import {Arrow, Text} from "react-konva";
-import {buf2hex, xor} from "../../util/CryptoHelpers";
+import {buf2hex, encrypt} from "../../util/CryptoHelpers";
+import {arrowDot, ArrowToShapes, Direction, HexTextWithBorder, TextWithBorder} from "../CustomShape";
+import {Frame} from "../animation/Frame";
+import {AnimationFrames} from "../animation/AnimationFrames";
+import CryptoJS from "crypto-js";
 
 export const Ecb = class extends Mode {
     constructor() {
         super();
     }
 
-    getAnimation(data, cipher, canvasWidth, canvasHeight) {
-        const frames =  []
+    getAnimation(data, cipher) {
+        const frames = []
         const key = cipher.key;
         const paddedArrayBuffer = data.getPaddedContent(cipher.padding, cipher.blockSize);
-        const blocks = paddedArrayBuffer.byteLength*8 / cipher.blockSize;
-        console.log(blocks)
+        const blocks = paddedArrayBuffer.byteLength * 8 / cipher.blockSize;
 
         for (let i = 0; i < blocks; i++) {
-            let ciphertext = ''
-            const block = paddedArrayBuffer.slice(i * cipher.blockSize/8, (i + 1) * cipher.blockSize/8)
-            frames.push(this.getFrame([
-                <Text text={buf2hex(block)} x={this.getX(0.43)} y={this.getY(0.1)}/>,
-                <Text text={key} x={this.getX(0.18)} y={this.getY(0.2)}/>,
-                <Arrow x={this.getX(0.5)} y={this.getY(0.12)} points={[0, 0, 0, this.getY(0.07)]} fill={'black'} stroke={'black'} />,
-                <Arrow x={this.getX(0.4)} y={this.getY(0.205)} points={[0, 0, this.getX(0.07), 0]} fill={'black'} stroke={'black'} />,
-            ]));
-            let k = 0;
-            for (let j = 0; j < block.byteLength; j += 1) {
-                frames.push(this.getFrame([
-                    <Text text={buf2hex(block)} x={this.getX(0.43)} y={this.getY(0.1)}/>,
-                    <Text text={key} x={this.getX(0.18)} y={this.getY(0.2)}/>,
-                    <Text text={buf2hex(block.slice(j, j+1))+'⊕'+key.slice(k, k+2)} x={this.getX(0.487)} y={this.getY(0.20)}/>,
-                    <Arrow x={this.getX(0.5)} y={this.getY(0.12)} points={[0, 0, 0, this.getY(0.07)]} fill={'black'} stroke={'black'} />,
-                    <Arrow x={this.getX(0.4)} y={this.getY(0.205)} points={[0, 0, this.getX(0.07), 0]} fill={'black'} stroke={'black'} />,
-                    <Arrow x={this.getX(0.5)} y={this.getY(0.22)} points={[0, 0, 0, this.getY(0.07)]} fill={'black'} stroke={'black'} />,
-                    <Text text={ciphertext} x={this.getX(0.43)} y={this.getY(0.30)}/>
-                ]));
-                ciphertext += xor(buf2hex(block.slice(j, j+1)), key.slice(k, k+2));
-                frames.push(this.getFrame([
-                    <Text text={buf2hex(block)} x={this.getX(0.43)} y={this.getY(0.1)}/>,
-                    <Text text={key} x={this.getX(0.18)} y={this.getY(0.2)}/>,
-                    <Text text={buf2hex(block.slice(j, j+1))+'⊕'+key.slice(k, k+2)} x={this.getX(0.487)} y={this.getY(0.20)}/>,
-                    <Arrow x={this.getX(0.5)} y={this.getY(0.12)} points={[0, 0, 0, this.getY(0.07)]} fill={'black'} stroke={'black'} />,
-                    <Arrow x={this.getX(0.4)} y={this.getY(0.205)} points={[0, 0, this.getX(0.07), 0]} fill={'black'} stroke={'black'} />,
-                    <Arrow x={this.getX(0.5)} y={this.getY(0.22)} points={[0, 0, 0, this.getY(0.07)]} fill={'black'} stroke={'black'} />,
-                    <Text text={ciphertext} x={this.getX(0.43)} y={this.getY(0.30)}/>
-                ]));
-                k = k + 2;
+            const block = paddedArrayBuffer.slice(i * cipher.blockSize / 8, (i + 1) * cipher.blockSize / 8)
+            const message = buf2hex(block);
+            const ciphertext = encrypt(CryptoJS.lib.WordArray.create(new Uint8Array(this.content)), CryptoJS.mode.ECB, key);
+
+            const messageShapes = HexTextWithBorder({
+                text: message,
+                x: this.getX(0.5),
+                y: this.getY(0.2),
+                fontSize: 24,
+                stroke: 'black',
+                strokeWidth: 1
+            });
+
+            const keyShapes = HexTextWithBorder({
+                text: key,
+                x: this.getX(0.2),
+                y: this.getY(0.5),
+                fontSize: 24,
+                stroke: 'black',
+                strokeWidth: 1
+            });
+
+            const ciphertextShapes = HexTextWithBorder({
+                text: ciphertext,
+                x: this.getX(0.5),
+                y: this.getY(0.8),
+                fontSize: 24,
+                stroke: 'black',
+                strokeWidth: 1
+            });
+
+            const aesBlock = TextWithBorder(
+                {
+                    text: 'AES',
+                    x: this.getX(0.5),
+                    y: this.getY(0.5),
+                    fontSize: 32,
+                    stroke: 'black',
+                    strokeWidth: 1
+                },
+                {
+                    stroke: 'black',
+                    strokeWidth: 1,
+                },
+                10
+            );
+
+            const arrowAnimMessageToBlock = ArrowToShapes(
+                messageShapes,
+                aesBlock,
+                {
+                    fill: 'black',
+                    stroke: 'black'
+                },
+                Direction.DOWN,
+                Direction.UP,
+                10
+            );
+            const dotArrowAnimMessageToBlock = arrowDot(arrowAnimMessageToBlock);
+
+            const arrowAnimKeyToBlock = ArrowToShapes(
+                keyShapes,
+                aesBlock,
+                {
+                    fill: 'black',
+                    stroke: 'black'
+                },
+                Direction.RIGHT,
+                Direction.LEFT,
+                10
+            );
+            const dotArrowAnimKeyToBlock = arrowDot(arrowAnimKeyToBlock);
+
+            const arrowAnimBlockToCipher = ArrowToShapes(
+                aesBlock,
+                ciphertextShapes,
+                {
+                    fill: 'black',
+                    stroke: 'black'
+                },
+                Direction.DOWN,
+                Direction.UP,
+                10
+            )
+            const dotArrowAnimBlockToCipher = arrowDot(arrowAnimBlockToCipher);
+
+            const maxLen = Math.max(dotArrowAnimMessageToBlock.length, dotArrowAnimKeyToBlock.length);
+            for (let i = 0; i < maxLen; i++) {
+                const frame = new Frame();
+                frame.frameSpeedMs = 10;
+
+                frame.shapes.push(...messageShapes, ...keyShapes, ...ciphertextShapes, ...aesBlock, ...arrowAnimMessageToBlock, ...arrowAnimKeyToBlock, ...arrowAnimBlockToCipher);
+                if (i < dotArrowAnimMessageToBlock.length) frame.shapes.push(dotArrowAnimMessageToBlock[i]);
+                if (i < dotArrowAnimKeyToBlock.length) frame.shapes.push(dotArrowAnimKeyToBlock[i]);
+                frames.push(frame);
+            }
+            for (let i = 0; i < dotArrowAnimBlockToCipher.length; i++) {
+                const frame = new Frame();
+                frame.frameSpeedMs = 10;
+                frame.shapes.push(...messageShapes, ...keyShapes, ...ciphertextShapes, ...aesBlock, ...arrowAnimMessageToBlock, ...arrowAnimKeyToBlock, ...arrowAnimBlockToCipher);
+                frame.shapes.push(dotArrowAnimBlockToCipher[i]);
+                frames.push(frame);
             }
         }
 
-        return new AnimationFrames(frames);
+        return AnimationFrames.withFrames(frames);
     }
 
 }

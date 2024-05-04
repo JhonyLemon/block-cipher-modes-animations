@@ -15,11 +15,11 @@ function toBinary(value) {
         .padStart(8, '0')).join(' ');
 }
 
-function encrypt(plaintext, key, iv) {
-    return CryptoJS.AES.encrypt(plaintext, key, { mode: CryptoJS.mode.ECB, format: CryptoJS.format.OpenSSL, iv: iv })
+export const encrypt = (plaintext, mode, key, iv = null) => {
+    return CryptoJS.AES.encrypt(plaintext, key, { mode: mode, format: CryptoJS.format.Hex, iv: iv }).ciphertext.toString(CryptoJS.enc.Hex)
 }
 
-function decrypt(cipherText, secret, iv) {
+function decrypt(cipherText, key, iv) {
 }
 
 export const buf2hex = (buffer) => {

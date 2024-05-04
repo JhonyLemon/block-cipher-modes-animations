@@ -10,17 +10,52 @@ const AnimationPlayer = (props) => {
     const [currentFrame, setCurrentFrame] = useState(0);
     const [isPlaying, setPlaying] = useState(false);
 
-    useInterval(() => {
-        if(!isPlaying) return;
-        if (currentFrame < animation.frames.length - 1) {
-            setCurrentFrame(currentFrame + 1)
-        } else {
-            setCurrentFrame(0)
-        }
-    }, 1000);
     const viewport = useWindowSize();
     const canvasWidth = viewport.width * 0.95;
     const canvasHeight = viewport.height * 0.85;
+
+    const [frame, setFrame] = useState(animation?.frames[currentFrame]?.getFrame());
+    const [frameSpeed, setFrameSpeed] = useState(animation?.frames[currentFrame]?.frameSpeedMs);
+
+    const updateFrameCallback = (newFrame) => {
+        const currFrame = newFrame!==null && newFrame!==undefined ? newFrame : currentFrame;
+        setFrame(animation?.frames[currFrame]?.getFrame());
+        setFrameSpeed(animation?.frames[currFrame]?.frameSpeedMs);
+    };
+
+    const clearState = (newFrame: number) => {
+        const eventShapes = {};
+        animation?.frames[currentFrame]?.shapes.forEach((shape) => {
+            if(shape.onHoverShapes.length > 0) {
+                eventShapes[shape.shape.id()] = shape.onHoverShapes;
+                shape.clearOnHoverShapes();
+            }
+        });
+        animation?.frames[newFrame]?.shapes.forEach((shape) => {
+            if(eventShapes[shape.shape.id()]) {
+                shape.onHoverShapes = eventShapes[shape.shape.id()];
+            }
+        });
+    };
+
+    animation?.frames[currentFrame]?.shapes.forEach((shape) => {
+        shape.callback = updateFrameCallback;
+    });
+
+    useInterval(() => {
+        if(!isPlaying) return;
+        if (currentFrame < animation.frames.length - 1) {
+            const newFrame = currentFrame + 1;
+            clearState(newFrame);
+            setCurrentFrame(newFrame)
+            updateFrameCallback(newFrame);
+        } else {
+            clearState(0);
+            setCurrentFrame(0)
+            updateFrameCallback(0)
+        }
+    }, frameSpeed);
+
     return (
         <div
             style={
@@ -49,13 +84,7 @@ const AnimationPlayer = (props) => {
             >
                 <Layer>
                     {
-                        animation?.frames[currentFrame]?.shapes.map((shape, index) => {
-                            return (
-                                React.cloneElement(shape, {
-                                    key: index
-                                })
-                            )
-                        })
+                        frame
                     }
                 </Layer>
             </Stage>
@@ -78,7 +107,10 @@ const AnimationPlayer = (props) => {
                     min="0" max={animation.frames.length-1}
                     value={currentFrame}
                     onChange={(e) => {
-                        setCurrentFrame(parseInt(e.target.value))
+                        const newFrame = parseInt(e.target.value);
+                        clearState(newFrame);
+                        setCurrentFrame(newFrame)
+                        updateFrameCallback(newFrame);
                     }}
                     step="1"
                 />
@@ -86,9 +118,14 @@ const AnimationPlayer = (props) => {
                     <button
                         onClick={() => {
                             if (currentFrame > 0) {
-                                setCurrentFrame(currentFrame - 1)
+                                const newFrame = currentFrame - 1;
+                                clearState(newFrame);
+                                setCurrentFrame(newFrame)
+                                updateFrameCallback(newFrame);
                             } else {
+                                clearState(0);
                                 setCurrentFrame(0)
+                                updateFrameCallback(0);
                             }
                         }}
                     >Previous</button>
@@ -100,9 +137,15 @@ const AnimationPlayer = (props) => {
                     <button
                         onClick={() => {
                             if (currentFrame < animation.frames.length - 1) {
-                                setCurrentFrame(currentFrame + 1)
+                                const newFrame = currentFrame + 1;
+                                clearState(newFrame);
+                                setCurrentFrame(newFrame)
+                                updateFrameCallback(newFrame);
                             } else {
-                                setCurrentFrame(animation.frames.length - 1)
+                                const newFrame = animation.frames.length - 1;
+                                clearState(newFrame);
+                                setCurrentFrame(newFrame)
+                                updateFrameCallback(newFrame);
                             }
                         }}
                     >Next</button>

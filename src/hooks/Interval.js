@@ -6,7 +6,6 @@ const useInterval = (callback, delay) => {
     useEffect(() => {
         savedCallback.current = callback;
     }, [callback]);
-
     useEffect(() => {
         const tick = () => savedCallback.current();
         if (delay !== null) {

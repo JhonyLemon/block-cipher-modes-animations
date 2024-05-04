@@ -5,8 +5,6 @@ import DataInputModal from "./components/DataInputModal";
 import DataModal from "./components/DataModal";
 import CipherDataInputModal from "./components/CipherDataInputModal";
 import AnimationPlayer from "./components/AnimationPlayer";
-import {AnimationFrames} from "./models/AnimationFrames";
-import {Frame} from "./models/Frame";
 
 const App = () => {
     const [dataInputModal, setDataInputModal] = useState(false);
@@ -17,7 +15,6 @@ const App = () => {
 
     const [cipherDataInputModal, setCipherDataInputModal] = useState(false);
     const [cipherData, setCipherData] = useState(DEFAULT_CIPHER_DATA);
-
     return (
         <div
             style={
@@ -40,7 +37,9 @@ const App = () => {
                 <Select
                     defaultValue={DEFAULT_MODE}
                     options={AVAILABLE_MODES}
-                    onChange={selectedMode => setMode(selectedMode)}
+                    onChange={selectedMode => {
+                        setMode(selectedMode)
+                }}
                     style={
                         {
                             margin: '10px 0',
@@ -128,7 +127,7 @@ const App = () => {
                     }
                 }
             >
-                <AnimationPlayer animation={mode.component.getAnimation(data, cipherData, )}/>
+                <AnimationPlayer animation={mode.component.getAnimation(data, cipherData)}/>
             </div>
         </div>
     );
