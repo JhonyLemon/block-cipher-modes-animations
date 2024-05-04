@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/block-cipher-modes-animations/static/css/main.e6c13ad2.css",
+    "main.js": "/block-cipher-modes-animations/static/js/main.707a9f7f.js",
+    "static/js/453.43c64a5e.chunk.js": "/block-cipher-modes-animations/static/js/453.43c64a5e.chunk.js",
+    "index.html": "/block-cipher-modes-animations/index.html",
+    "main.e6c13ad2.css.map": "/block-cipher-modes-animations/static/css/main.e6c13ad2.css.map",
+    "main.707a9f7f.js.map": "/block-cipher-modes-animations/static/js/main.707a9f7f.js.map",
+    "453.43c64a5e.chunk.js.map": "/block-cipher-modes-animations/static/js/453.43c64a5e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.707a9f7f.js"
+  ]
+}
