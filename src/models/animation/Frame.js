@@ -2,11 +2,13 @@ import {ShapeHolder} from "./ShapeHolder";
 
 export const Frame = class {
     shapes: ShapeHolder[];
+    isNewBlock: boolean;
     frameSpeedMs: number;
 
     constructor() {
         this.shapes = [];
         this.frameSpeedMs = 1000;
+        this.isNewBlock = false;
     }
 
     getFrame() {

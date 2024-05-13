@@ -1,12 +1,13 @@
-import {Mode} from "./Mode";
+
 import {arrowDot, ArrowToShapes, Direction, HexTextWithBorder, TextWithBorder} from "../CustomShape";
 import {Frame} from "../animation/Frame";
 import {AnimationFrames} from "../animation/AnimationFrames";
 import CryptoJS from "crypto-js";
+import {Mode} from "./Mode";
 
-export const Ecb = class extends Mode {
+export const Cbc = class extends Mode {
     constructor() {
-        super(CryptoJS.mode.ECB);
+        super(CryptoJS.mode.CBC);
     }
 
     getAnimation(data, cipher) {

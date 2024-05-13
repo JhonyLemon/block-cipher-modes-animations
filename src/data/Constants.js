@@ -5,12 +5,12 @@ import {generateIv, generateKey} from "../util/CryptoHelpers";
 import {Padding} from "../models/Padding";
 import {Mode} from "../models/modes/Mode";
 import {Ecb} from "../models/modes/Ecb";
+import {Cbc} from "../models/modes/Cbc";
 
 export const EMPTY_ANIMATION = new Mode();
 export const AVAILABLE_MODES = [
-    new CipherMode('None selected', '', EMPTY_ANIMATION),
     new CipherMode('ECB', 'Electronic codebook', new Ecb()),
-    new CipherMode('CBC', 'Cipher block chaining', EMPTY_ANIMATION),
+    new CipherMode('CBC', 'Cipher block chaining', new Cbc()),
     new CipherMode('CFB', 'Cipher feedback', EMPTY_ANIMATION),
     new CipherMode('OFB', 'Output feedback', EMPTY_ANIMATION),
     new CipherMode('CTR', 'Counter', EMPTY_ANIMATION),
@@ -23,7 +23,7 @@ export const AVAILABLE_MODES = [
     new CipherMode('ChaCha20', 'ChaCha20', EMPTY_ANIMATION)
 ];
 export const BLOCK_SIZE = 128;
-export const DEFAULT_MODE = AVAILABLE_MODES[1];
+export const DEFAULT_MODE = AVAILABLE_MODES[0];
 export const DEFAULT_PADDING = Padding.ZERO;
 export const DEFAULT_DATA = Data.fromString(
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +

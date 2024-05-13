@@ -1,9 +1,7 @@
 import Konva from "konva";
-import {Arrow, Circle, Group, Line, Rect, Text} from "react-konva";
+import {Rect, Text} from "react-konva";
 import {ShapeHolder} from "./animation/ShapeHolder";
 import {VIRTUAL_CANVAS_HEIGHT, VIRTUAL_CANVAS_WIDTH} from "../data/Constants";
-import {Frame} from "./animation/Frame";
-import {Shape} from "konva/lib/Shape";
 
 export const HexTextWithBorder = (props): ShapeHolder[] => {
     const text = props.text;

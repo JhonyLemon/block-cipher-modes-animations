@@ -1,4 +1,4 @@
-import CryptoJS from "crypto-js";
+import {arrayBufferToWordArray, wordArrayToArrayBuffer} from "../util/CryptoHelpers";
 
 export const Data = class {
     file: File;
@@ -40,17 +40,9 @@ export const Data = class {
     }
 
     getPaddedContent(paddingType, blockSize) {
-        let wordArray = CryptoJS.lib.WordArray.create(new Uint8Array(this.content));
-
+        let wordArray = arrayBufferToWordArray(this.content);
         paddingType.cryptoJsPadding.pad(wordArray, blockSize/8);
-
-        let paddedBuffer = new ArrayBuffer(wordArray.sigBytes);
-        let view = new DataView(paddedBuffer);
-        wordArray.words.forEach((word, index) => {
-            view.setInt32(index * 4, word);
-        });
-
-        return paddedBuffer;
+        return wordArrayToArrayBuffer(wordArray);
     }
 
     static fromFileAndContent(file: File, content: ArrayBuffer): Data {

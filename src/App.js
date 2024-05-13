@@ -12,7 +12,6 @@ const App = () => {
 
     const [dataModal, setDataModal] = useState(false);
     const [mode, setMode] = useState(DEFAULT_MODE);
-
     const [cipherDataInputModal, setCipherDataInputModal] = useState(false);
     const [cipherData, setCipherData] = useState(DEFAULT_CIPHER_DATA);
     return (

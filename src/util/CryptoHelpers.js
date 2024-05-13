@@ -8,36 +8,44 @@ export const generateIv = (keySize) => {
     return CryptoJS.lib.WordArray.random(keySize / 8).toString();
 }
 
-function toBinary(value) {
-    const encoder = new TextEncoder();
-    const encodedData = encoder.encode(value);
-    return [...encodedData].map(byte => byte.toString(2)
-        .padStart(8, '0')).join(' ');
-}
-
-export const encrypt = (plaintext, mode, key, iv = null) => {
-    return CryptoJS.AES.encrypt(plaintext, key, { mode: mode, format: CryptoJS.format.Hex, iv: iv }).ciphertext.toString(CryptoJS.enc.Hex)
+export const encrypt = (plaintext: ArrayBuffer, mode, key: string, iv: string= null) => {
+    const plainTextWordArray = arrayBufferToWordArray(plaintext);
+    return CryptoJS.AES.encrypt(
+        plainTextWordArray,
+        CryptoJS.enc.Hex.parse(key),
+        {
+            mode: mode,
+            format: CryptoJS.format.Hex,
+            iv: CryptoJS.enc.Hex.parse(iv === null ? '' : iv),
+            padding: CryptoJS.pad.NoPadding,
+        }
+    ).ciphertext.toString(CryptoJS.enc.Hex)
 }
 
 function decrypt(cipherText, key, iv) {
 }
 
-export const buf2hex = (buffer) => {
+export function arrayBufferToWordArray(ab) {
+    return CryptoJS.lib.WordArray.create(ab);
+}
+
+export function wordArrayToArrayBuffer(wordArray) {
+    let arrayBuffer = new ArrayBuffer(wordArray.sigBytes);
+    let view = new DataView(arrayBuffer);
+    wordArray.words.forEach((word, index) => {
+        view.setInt32(index * 4, word);
+    });
+    return arrayBuffer;
+}
+
+export const buf2hex = (buffer: ArrayBuffer):string => {
     return [...new Uint8Array(buffer)]
         .map(x => x.toString(16).padStart(2, '0'))
         .join('');
 }
 
-export const hex2a = (hex) => {
-    const hexString = hex.toString();//force conversion
-    let str = '';
-    for (let i = 0; i < hexString.length; i += 2)
-        str += String.fromCharCode(parseInt(hexString.substring(i, i+2), 16));
-    return str;
-}
-
 export const xor = (hex1, hex2) => {
-    const h1= parseInt(hex1, 16)
-    const h2= parseInt(hex2, 16)
+    const h1 = parseInt(hex1, 16)
+    const h2 = parseInt(hex2, 16)
     return (h1 ^ h2).toString(16)
 }
