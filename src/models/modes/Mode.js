@@ -29,6 +29,10 @@ export const Mode = class {
         return encrypt(block, this.mode, cipher.key, cipher.iv);
     }
 
+    getEncryption(block: ArrayBuffer, cipher: CipherData, iv) {
+        return encrypt(block, this.mode, cipher.key, iv);
+    }
+
     getConvertedBlock(block: ArrayBuffer): string {
         return buf2hex(block);
     }

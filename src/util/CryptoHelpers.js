@@ -44,8 +44,11 @@ export const buf2hex = (buffer: ArrayBuffer):string => {
         .join('');
 }
 
-export const xor = (hex1, hex2) => {
-    const h1 = parseInt(hex1, 16)
-    const h2 = parseInt(hex2, 16)
-    return (h1 ^ h2).toString(16)
+export const xor = (a, b) => {
+    let res = "",
+        i = a.length,
+        j = b.length;
+    while (i-->0 && j-->0)
+        res = (parseInt(a.charAt(i), 16) ^ parseInt(b.charAt(j), 16)).toString(16) + res;
+    return res;
 }
