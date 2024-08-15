@@ -6,12 +6,13 @@ import {Padding} from "../models/Padding";
 import {Mode} from "../models/modes/Mode";
 import {Ecb} from "../models/modes/Ecb";
 import {Cbc} from "../models/modes/Cbc";
+import {Cfb} from "../models/modes/Cfb";
 
 export const EMPTY_ANIMATION = new Mode();
 export const AVAILABLE_MODES = [
     new CipherMode('ECB', 'Electronic codebook', new Ecb()),
     new CipherMode('CBC', 'Cipher block chaining', new Cbc()),
-    new CipherMode('CFB', 'Cipher feedback', EMPTY_ANIMATION),
+    new CipherMode('CFB', 'Cipher feedback', new Cfb()),
     new CipherMode('OFB', 'Output feedback', EMPTY_ANIMATION),
     new CipherMode('CTR', 'Counter', EMPTY_ANIMATION),
     new CipherMode('GCM', 'Galois/Counter mode', EMPTY_ANIMATION),
