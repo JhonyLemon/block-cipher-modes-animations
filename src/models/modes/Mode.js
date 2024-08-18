@@ -1,5 +1,4 @@
 import {AnimationFrames} from "../animation/AnimationFrames";
-import {VIRTUAL_CANVAS_HEIGHT, VIRTUAL_CANVAS_WIDTH} from "../../data/Constants";
 import {buf2hex, encrypt} from "../../util/CryptoHelpers";
 import {CipherData} from "../CipherData";
 import {Data} from "../Data";
@@ -64,11 +63,11 @@ export const Mode = class {
     }
 
     getCanvasWidth() {
-        return VIRTUAL_CANVAS_WIDTH
+        return 10
     }
 
     getCanvasHeight() {
-        return VIRTUAL_CANVAS_HEIGHT
+        return 10
     }
 
 }

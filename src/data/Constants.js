@@ -7,21 +7,18 @@ import {Mode} from "../models/modes/Mode";
 import {Ecb} from "../models/modes/Ecb";
 import {Cbc} from "../models/modes/Cbc";
 import {Cfb} from "../models/modes/Cfb";
+import {Pcbc} from "../models/modes/Pcbc";
+import {Ofb} from "../models/modes/Ofb";
+import {Ctr} from "../models/modes/Ctr";
 
 export const EMPTY_ANIMATION = new Mode();
 export const AVAILABLE_MODES = [
     new CipherMode('ECB', 'Electronic codebook', new Ecb()),
     new CipherMode('CBC', 'Cipher block chaining', new Cbc()),
     new CipherMode('CFB', 'Cipher feedback', new Cfb()),
-    new CipherMode('OFB', 'Output feedback', EMPTY_ANIMATION),
-    new CipherMode('CTR', 'Counter', EMPTY_ANIMATION),
-    new CipherMode('GCM', 'Galois/Counter mode', EMPTY_ANIMATION),
-    new CipherMode('CCM', 'Counter with CBC-MAC', EMPTY_ANIMATION),
-    new CipherMode('XTS', 'XEX-based tweaked-codebook mode with ciphertext stealing', EMPTY_ANIMATION),
-    new CipherMode('SIV', 'Synthetic initialization vector', ''),
-    new CipherMode('EAX', 'Encrypt then authenticate then translate', EMPTY_ANIMATION),
-    new CipherMode('OCB', 'Offset codebook mode', EMPTY_ANIMATION),
-    new CipherMode('ChaCha20', 'ChaCha20', EMPTY_ANIMATION)
+    new CipherMode('OFB', 'Output feedback', new Ofb()),
+    new CipherMode('PCBC', 'Propagating cipher block chaining', new Pcbc()),
+    new CipherMode('CTR', 'Counter', new Ctr())
 ];
 export const BLOCK_SIZE = 128;
 export const DEFAULT_MODE = AVAILABLE_MODES[0];
@@ -38,5 +35,21 @@ export const DEFAULT_CIPHER_DATA = new CipherData(
     BLOCK_SIZE,
     DEFAULT_PADDING
 )
-export const VIRTUAL_CANVAS_WIDTH = 1280;
-export const VIRTUAL_CANVAS_HEIGHT = 720;
+
+export const VIRTUAL_RESOLUTIONS = {
+    // '240p': {width: 426, height: 240},
+    // '360p': {width: 640, height: 360},
+    // '480p': {width: 854, height: 480},
+    '720p': {width: 1280, height: 720},
+    '1080p': {width: 1920, height: 1080},
+    '1440p': {width: 2560, height: 1440},
+    '2160p': {width: 3840, height: 2160},
+    '4320p': {width: 7680, height: 4320},
+}
+
+export const CANVAS_SIZE = (resolution) => {
+    const closestMatch = Object.values(VIRTUAL_RESOLUTIONS).reduce((prev, curr) => {
+        return Math.abs(curr.width - resolution.width) < Math.abs(prev.width - resolution.width) ? curr : prev;
+    });
+    return closestMatch;
+};

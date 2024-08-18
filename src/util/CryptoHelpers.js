@@ -38,10 +38,26 @@ export function wordArrayToArrayBuffer(wordArray) {
     return arrayBuffer;
 }
 
+export function str2ab(str) {
+    return new TextEncoder().encode(str).buffer;
+}
+
 export const buf2hex = (buffer: ArrayBuffer):string => {
     return [...new Uint8Array(buffer)]
         .map(x => x.toString(16).padStart(2, '0'))
         .join('');
+}
+
+export const hex2buf = (hexString: string):ArrayBuffer => {
+    return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16))).buffer;
+}
+
+export const hex2bin = (hex) => {
+    return parseInt(hex, 16).toString(2).padStart(8, '0');
+}
+
+export const hex2str = (hex) => {
+    return String.fromCharCode(parseInt(hex, 16));
 }
 
 export const xor = (a, b) => {

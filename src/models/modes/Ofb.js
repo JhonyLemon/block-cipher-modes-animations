@@ -3,11 +3,11 @@ import {Frame} from "../animation/Frame";
 import {AnimationFrames} from "../animation/AnimationFrames";
 import CryptoJS from "crypto-js";
 import {Mode} from "./Mode";
-import {encrypt, hex2buf, str2ab, xor} from "../../util/CryptoHelpers";
+import {xor} from "../../util/CryptoHelpers";
 
-export const Cfb = class extends Mode {
+export const Ofb = class extends Mode {
     constructor() {
-        super(CryptoJS.mode.CFB);
+        super(CryptoJS.mode.OFB);
     }
 
     getAnimation(data, cipher) {
@@ -18,14 +18,6 @@ export const Cfb = class extends Mode {
             const block = this.getBlockSlice(paddedArrayBuffer, cipher, i);
             const message = this.getConvertedBlock(block);
             const ciphertext = this.getEncryption(block, cipher)
-
-            const afterAes = encrypt(hex2buf(iv),  CryptoJS.mode.ECB, cipher.key);
-            const xorResult = xor(message, afterAes);
-            console.log([
-                ciphertext,
-                afterAes,
-                xorResult
-            ])
 
             const ivShapes = HexTextWithBorder({
                 text: iv,
@@ -49,6 +41,15 @@ export const Cfb = class extends Mode {
                 text: message,
                 x: this.getX(0.2),
                 y: this.getY(0.5),
+                fontSize: 24,
+                stroke: 'black',
+                strokeWidth: 1
+            });
+
+            const xoredShapes = HexTextWithBorder({
+                text: xor(iv, message),
+                x: this.getX(0.5),
+                y: this.getY(0.4),
                 fontSize: 24,
                 stroke: 'black',
                 strokeWidth: 1
