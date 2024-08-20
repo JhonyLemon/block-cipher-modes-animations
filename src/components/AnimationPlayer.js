@@ -269,7 +269,7 @@ const canvasInit = (p) => {
         dots = [];
         elements.connectionAnimation.data.forEach((data, i) => {
             const dotConnection = []
-            data.animations.map((connectionIndex, j) => {
+            data.animations.forEach((connectionIndex, j) => {
                 const frames = []
                 for (let k = 0; k <= 1; k = k + elements.connectionAnimation.options.speed) {
                     const dot = {
@@ -322,7 +322,7 @@ const canvasInit = (p) => {
     p.mouseMoved = () => {
         let hovered = {}
         icons.forEach((icon, i) => {
-            if (isInside(icon, p)) {
+            if (isInside(icon, p) && elements.boxes[i].content.options.onHoverInfo) {
                 hovered = icon
             }
         });
@@ -330,7 +330,7 @@ const canvasInit = (p) => {
         hovered = {}
         texts.forEach((allTexts, i) => {
             const text = allTexts[animationParameters.animationCycle];
-            if (isInside(text.boundingBox, p)) {
+            if (isInside(text.boundingBox, p) && elements.boxes[i].content.options.onHoverText) {
                 hovered = {index: i};
             }
         });

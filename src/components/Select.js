@@ -1,8 +1,11 @@
 import {useState} from "react";
 
-const Select = (props) => {
-    const {defaultValue, options, onChange, style, disabled} = props
-    const [selected, setSelected] = useState(options.findIndex(option => option === defaultValue))
+const Select = ({options, defaultSelected, style, disabled, onChange}) => {
+    const [selected, setSelected] = useState(Object.keys(options)[defaultSelected]);
+
+    const componentsOptions = Object.keys(options).map((key) =>
+        <option key={key} value={key}>{options[key].name}</option>
+    );
 
     return (
         <select disabled={disabled!==null ? disabled : false} style={style} value={selected} onChange={event => {
@@ -10,9 +13,7 @@ const Select = (props) => {
             onChange(options[event.target.value])
         }}>
             {
-                options.map((option, index) => {
-                    return <option key={index} value={index}>{option.name}</option>
-                })
+                componentsOptions
             }
         </select>
     )

@@ -1,63 +1,88 @@
-import Modal from "./Modal";
+import Modal from "react-modal";
+import {wa2str} from "../util/CryptoHelpers";
 
-const DataInputModal = (props) => {
-    const {enabled, onOutsideClick, data} = props;
+export const DataModal = ({isOpen, setOpen, data, file}) => {
     return (
         <Modal
-            enabled={enabled}
-            onOutsideClick={onOutsideClick}
-            children={
-                <div
-                    style={
-                        {
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: 'white',
-                            padding: '10px 40px',
-                            maxWidth: '50%',
-                        }
+            isOpen={isOpen}
+            style={
+                {
+                    overlay: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)' // make overlay darker
+                    },
+                    content: {
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
+                        transform: 'translate(-50%, -50%)',
+                        border: '1px solid #ccc',
+                        background: '#fff',
+                        overflow: 'auto',
+                        borderRadius: '4px',
+                        outline: 'none',
+                        padding: '20px'
                     }
-                >
-                    <h2>Data</h2>
-                    {data.isFile() ?
-                        <button
-                            style={
-                                {
-                                    minHeight: '30px'
-                                }
-                            }
-                        >
-                            <a
-                                download={data.file.name}
-                                target="_blank"
-                                rel="noreferrer"
-                                href={URL.createObjectURL(
-                                    data.file
-                                )}
-                                style={{
-                                    textDecoration: "inherit",
-                                    color: "inherit",
-                                }}
-                            >
-                                Download
-                            </a>
-                        </button> :
-                        <span
-                            style={
-                                {
-                                    margin: '10px 0',
-                                    textAlign: 'center'
-                                }}
-                        >
-                            {data.getContentAsString()}
-                        </span>
-                    }
-                </div>
+                }
             }
-        />
+            onRequestClose={() => setOpen(false)}
+            shouldCloseOnOverlayClick={true}
+        >
+            <div
+                style={
+                    {
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: 'white',
+                        padding: '0 10px',
+                        minWidth: '300px',
+                        minHeight: '200px',
+                    }
+                }
+            >
+                <h2>{(file!==undefined && file!==null) ? 'File data' : 'Text data'}</h2>
+                {(file!==undefined && file!==null) ?
+                    <button
+                        style={
+                            {
+                                minHeight: '30px',
+                            }
+                        }
+                    >
+                        <a
+                            download={file.name}
+                            target="_blank"
+                            rel="noreferrer"
+                            href={URL.createObjectURL(
+                                file
+                            )}
+                            style={{
+                                textDecoration: "inherit",
+                                color: "inherit",
+                            }}
+                        >
+                            {file.name}
+                        </a>
+                    </button> :
+                    <span
+                        style={
+                            {
+                                margin: '10px 0',
+                                textAlign: 'center',
+                                width: '100%',
+                                padding: '10px',
+                                border: '1px solid #ccc',
+                                overflowY: 'auto', // This will add vertical scroll if needed
+                                maxHeight: '200px' // Set to desired max height
+                            }}
+                    >
+                            {wa2str(data)}
+                        </span>
+                }
+            </div>
+        </Modal>
     );
 };
-
-export default DataInputModal;

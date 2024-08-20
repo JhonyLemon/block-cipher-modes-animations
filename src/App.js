@@ -1,15 +1,18 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useState} from "react";
 import {
     DEFAULT_DATA,
     DEFAULT_MODE,
     AVAILABLE_MODES,
-    DEFAULT_CIPHER_DATA,
+    KEY, BLOCK_SIZE,
+    DEFAULT_PADDING,
 } from "./data/Constants";
 import Select from "./components/Select";
-import DataInputModal from "./components/DataInputModal";
-import DataModal from "./components/DataModal";
-import CipherDataInputModal from "./components/CipherDataInputModal";
 import {AnimationPlayer, SIDE} from "./components/AnimationPlayer";
+import Modal from "react-modal";
+import {CipherDataInputModal} from "./components/CipherDataInputModal";
+import {DataInputModal} from "./components/DataInputModal";
+import {DataModal} from "./components/DataModal";
+import {ecb} from "./modes/Ecb";
 
 Array.prototype.max = function () {
     return Math.max.apply(null, this);
@@ -172,13 +175,22 @@ const elements = {
 }
 
 const App = () => {
-    const [dataInputModal, setDataInputModal] = useState(false);
-    const [data, setData] = useState(DEFAULT_DATA);
-
-    const [dataModal, setDataModal] = useState(false);
+    const [key, setKey] = useState(KEY());
+    const [iv, setIv] = useState(KEY());
+    const [blockSize, setBlockSize] = useState(BLOCK_SIZE);
+    const [padding, setPadding] = useState(DEFAULT_PADDING);
     const [mode, setMode] = useState(DEFAULT_MODE);
-    const [cipherDataInputModal, setCipherDataInputModal] = useState(false);
-    const [cipherData, setCipherData] = useState(DEFAULT_CIPHER_DATA);
+
+    const [data, setData] = useState(DEFAULT_DATA);
+    const [file, setFile] = useState(null);
+
+    const [isDataModalOpen, setDataModalOpen] = useState(false);
+    const [isDataInputModalOpen, setDataInputModalOpen] = useState(false);
+    const [isCipherDataModalOpen, setCipherDataModalOpen] = useState(false);
+
+    Modal.setAppElement('#root');
+
+    const ecbElements = ecb(data, key, iv, blockSize, padding);
 
     return (
         <div
@@ -201,7 +213,7 @@ const App = () => {
                 }
             >
                 <Select
-                    defaultValue={DEFAULT_MODE}
+                    defaultSelected={0}
                     options={AVAILABLE_MODES}
                     onChange={selectedMode => {
                         setMode(selectedMode)
@@ -225,7 +237,7 @@ const App = () => {
                             maxWidth: '20%'
                         }
                     }
-                    onClick={() => setDataModal(true)}
+                    onClick={() => setDataModalOpen(true)}
                 >
                     Show data
                 </button>
@@ -238,7 +250,7 @@ const App = () => {
                             maxWidth: '20%'
                         }
                     }
-                    onClick={() => setDataInputModal(true)}
+                    onClick={() => setDataInputModalOpen(true)}
                 >
                     Refresh data
                 </button>
@@ -251,38 +263,40 @@ const App = () => {
                             maxWidth: '20%'
                         }
                     }
-                    onClick={() => setCipherDataInputModal(true)}
+                    onClick={() => setCipherDataModalOpen(true)}
                 >
                     Cipher data
                 </button>
             </div>
-            <DataModal
-                enabled={dataModal}
-                onOutsideClick={() => {
-                    setDataModal(false)
+            <CipherDataInputModal
+                isOpen={isCipherDataModalOpen}
+                setOpen={setCipherDataModalOpen}
+                onClose={(key, iv, blockSize, padding) => {
+                    setKey(key);
+                    setIv(iv);
+                    setBlockSize(blockSize);
+                    setPadding(padding);
                 }}
-                data={data}
+                previousKey={key}
+                previousIv={iv}
+                previousBlockSize={blockSize}
+                previousPadding={padding}
             />
             <DataInputModal
-                enabled={dataInputModal}
-                onSubmit={data => {
-                    setData(data)
-                    setDataInputModal(false)
+                isOpen={isDataInputModalOpen}
+                setOpen={setDataInputModalOpen}
+                onClose={(data, isFile) => {
+                    setData(data);
+                    setFile(isFile);
                 }}
-                onOutsideClick={() => {
-                    setDataInputModal(false)
-                }}
+                previousData={data}
+                previousIsFile={file}
             />
-            <CipherDataInputModal
-                enabled={cipherDataInputModal}
-                previousData={cipherData}
-                onSubmit={data => {
-                    setCipherData(data)
-                    setCipherDataInputModal(false)
-                }}
-                onOutsideClick={() => {
-                    setCipherDataInputModal(false)
-                }}
+            <DataModal
+                isOpen={isDataModalOpen}
+                setOpen={setDataModalOpen}
+                data={data}
+                file={file}
             />
             <div
                 style={
@@ -293,7 +307,7 @@ const App = () => {
                     }
                 }
             >
-                <AnimationPlayer elements={elements}/>
+                <AnimationPlayer elements={ecbElements}/>
             </div>
 
         </div>

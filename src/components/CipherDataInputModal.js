@@ -1,74 +1,125 @@
-import Modal from "./Modal";
 import {useState} from "react";
+import Modal from "react-modal";
+import {AVAILABLE_PADDING, IV, KEY} from "../data/Constants";
 import Select from "./Select";
-import {Padding} from "../models/Padding";
-import {generateIv, generateKey} from "../util/CryptoHelpers";
-import {CipherData} from "../models/CipherData";
 
-const CipherDataInputModal = (props) => {
-    const {enabled, onOutsideClick, onSubmit, previousData} = props;
-    const [key, setKey] = useState(previousData.key);
-    const [iv, setIv] = useState(previousData.iv);
-    const [blockSize, setBlockSize] = useState(previousData.blockSize);
-    const [padding, setPadding] = useState(previousData.padding);
+export const CipherDataInputModal = ({isOpen, setOpen, onClose, previousKey, previousIv, previousBlockSize, previousPadding}) => {
+    const [key, setKey] = useState(previousKey);
+    const [iv, setIv] = useState(previousIv);
+    const [blockSize, setBlockSize] = useState(previousBlockSize);
+    const [padding, setPadding] = useState(previousPadding);
     return (
         <Modal
-            enabled={enabled}
-            onOutsideClick= {() => {
-                setKey(previousData.key)
-                setIv(previousData.iv)
-                setBlockSize(previousData.blockSize)
-                setPadding(previousData.padding)
-                onOutsideClick()
+            isOpen={isOpen}
+            style={
+                {
+                    overlay: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)' // make overlay darker
+                    },
+                    content: {
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
+                        transform: 'translate(-50%, -50%)',
+                        border: '1px solid #ccc',
+                        background: '#fff',
+                        overflow: 'auto',
+                        borderRadius: '4px',
+                        outline: 'none',
+                        padding: '20px'
+                    }
+                }
+            }
+            onRequestClose={() => {
+                setOpen(false);
+                if (!isBlockSizeValid(blockSize)) {
+                    setBlockSize(previousBlockSize);
+                }
+                if (!isKeyValid(key, blockSize)) {
+                    setKey(previousKey);
+                }
+                if (!isIVValid(iv, blockSize)) {
+                    setIv(previousIv);
+                }
+                onClose(key, iv, blockSize, padding);
             }}
-            children={
+            shouldCloseOnOverlayClick={true}
+        >
+            <div
+                style={
+                    {
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        backgroundColor: 'white',
+                        padding: '10px 10px'
+                    }
+                }
+            >
+
+                <label>Key size</label>
+                <select
+                    disabled={true}
+                    defaultValue={blockSize}
+                    onChange={event => {
+                        setBlockSize(event.target.value)
+                    }}
+                    style={
+                        {
+                            margin: '10px 0',
+                            minHeight: '30px',
+                            minWidth: '300px',
+                            maxWidth: '80%'
+                        }
+                    }
+                >
+                    <option>128</option>
+                    <option>192</option>
+                    <option>256</option>
+                </select>
+                <label
+                    style={
+                        {
+                            color: 'red',
+                            display: isBlockSizeValid(blockSize) ? 'none' : 'block'
+                        }
+                    }
+                >Invalid key size</label>
+                <label>Padding</label>
+                <Select
+                    disabled={true}
+                    defaultValue={0}
+                    options={AVAILABLE_PADDING}
+                    onChange={selectedMode => {
+                        setPadding(selectedMode)
+                    }}
+                    style={
+                        {
+                            margin: '10px 0',
+                            minHeight: '30px',
+                            minWidth: '300px',
+                            maxWidth: '80%'
+                        }
+                    }
+                />
+                <label>Key (as hexadecimal string)</label>
                 <div
                     style={
                         {
                             display: 'flex',
-                            flexDirection: 'column',
+                            flexDirection: 'row',
                             alignItems: 'center',
-                            backgroundColor: 'white',
-                            padding: '10px 10px'
+                            justifyContent: 'center',
+                            gap: '10px'
                         }
                     }
                 >
-
-                    <label>Key size</label>
-                    <select
-                        disabled={true}
-                        defaultValue={blockSize}
+                    <input
+                        value={key}
                         onChange={event => {
-                            setBlockSize(event.target.value)
-                        }}
-                        style={
-                            {
-                                margin: '10px 0',
-                                minHeight: '30px',
-                                minWidth: '300px',
-                                maxWidth: '80%'
-                            }
-                        }
-                    >
-                        <option>128</option>
-                        <option>192</option>
-                        <option>256</option>
-                    </select>
-                    <label
-                        style={
-                            {
-                                color: 'red',
-                                display: isBlockSizeValid(blockSize) ? 'none' : 'block'
-                            }
-                        }
-                    >Invalid key size</label>
-                    <label>Padding</label>
-                    <Select
-                        disabled={true}
-                        defaultValue={Padding.ZERO}
-                        options={Padding.PADDINGS}
-                        onChange={selectedMode => {
-                            setPadding(selectedMode)
+                            setKey(event.target.value)
                         }}
                         style={
                             {
@@ -79,121 +130,9 @@ const CipherDataInputModal = (props) => {
                             }
                         }
                     />
-                    <label
-                        style={
-                            {
-                                color: 'red',
-                                display: isPaddingValid(padding) ? 'none' : 'block'
-                            }
-                        }
-                    >Invalid padding</label>
-                    <label>Key (as hexadecimal string)</label>
-                    <div
-                        style={
-                            {
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '10px'
-                            }
-                        }
-                    >
-                        <input
-                            value={key}
-                            onChange={event => {
-                                setKey(event.target.value)
-                            }}
-                            style={
-                                {
-                                    margin: '10px 0',
-                                    minHeight: '30px',
-                                    minWidth: '300px',
-                                    maxWidth: '80%'
-                                }
-                            }
-                        />
-                        <button
-                            onClick={() => {
-                                setKey(generateKey(blockSize))
-                            }}
-                            style={
-                                {
-                                    padding: '10px',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer',
-                                    minWidth: '100px',
-                                    width: "fit-content",
-                                    margin: '10px 0'
-                                }
-                            }
-                        >Refresh</button>
-                    </div>
-
-                    <label
-                        style={
-                            {
-                                color: 'red',
-                                display: isKeyValid(key, blockSize) ? 'none' : 'block'
-                            }
-                        }
-                    >Invalid key</label>
-                    <label>Iv (as hexadecimal string)</label>
-                    <div
-                        style={
-                            {
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '10px'
-                            }
-                        }
-                    >
-                        <input
-                            value={iv}
-                            onChange={event => {
-                                setIv(event.target.value)
-                            }}
-                            style={
-                                {
-                                    margin: '10px 0',
-                                    minHeight: '30px',
-                                    minWidth: '300px',
-                                    maxWidth: '80%'
-                                }
-                            }
-                        />
-                        <button
-                            onClick={() => {
-                                setIv(generateIv(blockSize))
-                            }}
-                            style={
-                                {
-                                    padding: '10px',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    cursor: 'pointer',
-                                    minWidth: '100px',
-                                    width: "fit-content",
-                                    margin: '10px 0'
-                                }
-                            }
-                        >Refresh</button>
-                    </div>
-                    <label
-                        style={
-                            {
-                                color: 'red',
-                                display: isIVValid(iv, blockSize) ? 'none' : 'block'
-                            }
-                        }
-                    >Invalid iv</label>
                     <button
-                        disabled={!isValid(key, iv, blockSize, padding)}
                         onClick={() => {
-                            onSubmit(new CipherData(key, iv, blockSize, padding))
+                            setKey(KEY())
                         }}
                         style={
                             {
@@ -206,12 +145,73 @@ const CipherDataInputModal = (props) => {
                                 margin: '10px 0'
                             }
                         }
-                    >Save
+                    >Refresh
                     </button>
-
                 </div>
-            }
-        />
+
+                <label
+                    style={
+                        {
+                            color: 'red',
+                            display: isKeyValid(key, blockSize) ? 'none' : 'block'
+                        }
+                    }
+                >Invalid key</label>
+                <label>Iv (as hexadecimal string)</label>
+                <div
+                    style={
+                        {
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px'
+                        }
+                    }
+                >
+                    <input
+                        value={iv}
+                        onChange={event => {
+                            setIv(event.target.value)
+                        }}
+                        style={
+                            {
+                                margin: '10px 0',
+                                minHeight: '30px',
+                                minWidth: '300px',
+                                maxWidth: '80%'
+                            }
+                        }
+                    />
+                    <button
+                        onClick={() => {
+                            setIv(IV())
+                        }}
+                        style={
+                            {
+                                padding: '10px',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer',
+                                minWidth: '100px',
+                                width: "fit-content",
+                                margin: '10px 0'
+                            }
+                        }
+                    >Refresh
+                    </button>
+                </div>
+                <label
+                    style={
+                        {
+                            color: 'red',
+                            display: isIVValid(iv, blockSize) ? 'none' : 'block'
+                        }
+                    }
+                >Invalid iv</label>
+
+            </div>
+        </Modal>
     );
 };
 
@@ -252,13 +252,3 @@ const isIVValid = (iv, blockSize) => {
 const isBlockSizeValid = (blockSize) => {
     return blockSize === 128 || blockSize === 192 || blockSize === 256;
 }
-
-const isPaddingValid = (padding) => {
-    return Padding.PADDINGS.includes(padding);
-}
-
-const isValid = (key, iv, blockSize, padding) => {
-    return isKeyValid(key, blockSize) && isIVValid(iv, blockSize) && isBlockSizeValid(blockSize) && isPaddingValid(padding);
-}
-
-export default CipherDataInputModal;
