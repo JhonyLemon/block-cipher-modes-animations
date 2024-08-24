@@ -1,9 +1,27 @@
 import {useState} from "react";
 import Modal from "react-modal";
-import {AVAILABLE_PADDING, IV, KEY} from "../data/Constants";
+import {
+    AVAILABLE_PADDING,
+    BLOCK_SIZE_DESCRIPTION,
+    IV,
+    IV_DESCRIPTION,
+    KEY,
+    KEY_DESCRIPTION,
+    PADDING_DESCRIPTION
+} from "../data/Constants";
+import {Tooltip} from 'react-tooltip'
 import Select from "./Select";
+import information from "../information.png";
 
-export const CipherDataInputModal = ({isOpen, setOpen, onClose, previousKey, previousIv, previousBlockSize, previousPadding}) => {
+export const CipherDataInputModal = ({
+                                         isOpen,
+                                         setOpen,
+                                         onClose,
+                                         previousKey,
+                                         previousIv,
+                                         previousBlockSize,
+                                         previousPadding
+                                     }) => {
     const [key, setKey] = useState(previousKey);
     const [iv, setIv] = useState(previousIv);
     const [blockSize, setBlockSize] = useState(previousBlockSize);
@@ -59,7 +77,19 @@ export const CipherDataInputModal = ({isOpen, setOpen, onClose, previousKey, pre
                 }
             >
 
-                <label>Key size</label>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <label style={{margin: 0}}>Block size</label>
+                    <img data-tooltip-id='blockSize' src={information} alt="Info"
+                         style={{height: '15px', width: '15px', marginLeft: '5px'}}/>
+                </div>
+                <Tooltip id='blockSize' variant={'dark'}>
+                    <div style={{
+                        maxWidth: '200px'
+                    }}
+                    >
+                        {BLOCK_SIZE_DESCRIPTION}
+                    </div>
+                </Tooltip>
                 <select
                     disabled={true}
                     defaultValue={blockSize}
@@ -87,7 +117,19 @@ export const CipherDataInputModal = ({isOpen, setOpen, onClose, previousKey, pre
                         }
                     }
                 >Invalid key size</label>
-                <label>Padding</label>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <label style={{margin: 0}}>Padding</label>
+                    <img data-tooltip-id='padding' src={information} alt="Info"
+                         style={{height: '15px', width: '15px', marginLeft: '5px'}}/>
+                </div>
+                <Tooltip id='padding' variant={'dark'}>
+                    <div style={{
+                        maxWidth: '200px'
+                    }}
+                    >
+                        {PADDING_DESCRIPTION}
+                    </div>
+                </Tooltip>
                 <Select
                     disabled={true}
                     defaultValue={0}
@@ -104,7 +146,19 @@ export const CipherDataInputModal = ({isOpen, setOpen, onClose, previousKey, pre
                         }
                     }
                 />
-                <label>Key (as hexadecimal string)</label>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <label style={{margin: 0}}>Key (as hexadecimal string)</label>
+                    <img data-tooltip-id='key' src={information} alt="Info"
+                         style={{height: '15px', width: '15px', marginLeft: '5px'}}/>
+                </div>
+                <Tooltip id='key' variant={'dark'}>
+                    <div style={{
+                        maxWidth: '200px'
+                    }}
+                    >
+                        {KEY_DESCRIPTION}
+                    </div>
+                </Tooltip>
                 <div
                     style={
                         {
@@ -157,7 +211,19 @@ export const CipherDataInputModal = ({isOpen, setOpen, onClose, previousKey, pre
                         }
                     }
                 >Invalid key</label>
-                <label>Iv (as hexadecimal string)</label>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <label style={{margin: 0}}>Iv (as hexadecimal string)</label>
+                    <img data-tooltip-id='padding' src={information} alt="Info"
+                         style={{height: '15px', width: '15px', marginLeft: '5px'}}/>
+                </div>
+                <Tooltip id='padding' variant={'dark'}>
+                    <div style={{
+                        maxWidth: '200px'
+                    }}
+                    >
+                        {IV_DESCRIPTION}
+                    </div>
+                </Tooltip>
                 <div
                     style={
                         {

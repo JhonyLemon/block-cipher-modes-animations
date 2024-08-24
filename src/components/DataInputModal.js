@@ -38,7 +38,8 @@ export const DataInputModal = ({isOpen, setOpen, onClose, previousData, previous
                 setOpen(false);
                 if (inputMode === 'Text') {
                     onClose(str2wa(textData), null);
-                } else {
+                } else if(inputMode === 'File' && !(file===undefined || file===null)) {
+                    console.log(file)
                     onClose(fileData, file);
                 }
             }}

@@ -1,5 +1,5 @@
 import {hex2bin, hex2str} from "../util/CryptoHelpers";
-import {CANVAS_SIZE, VIRTUAL_RESOLUTIONS} from "../data/Constants";
+import {VIRTUAL_RESOLUTIONS} from "../data/Constants";
 import React, {useEffect, useState} from "react";
 import useWindowSize from "../hooks/WindowSize";
 import useInterval from "../hooks/Interval";
@@ -10,6 +10,53 @@ export const SIDE = {
     RIGHT: {x: 1, y: 0.5, arrowX: 10, arrowY: 0, arrowAngle: Math.PI},
     DOWN: {x: 0.5, y: 1, arrowX: 0, arrowY: 10, arrowAngle: -Math.PI / 2},
     LEFT: {x: 0, y: 0.5, arrowX: -10, arrowY: 0, arrowAngle: 0}
+}
+
+export const TOOLTIP_POSITION = {
+    TOP: {
+        LEFT: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: 0, y: -(tooltipHeight + (parentHeight))}
+        },
+        MIDDLE: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: -(tooltipWidth / 2) + parentWidth / 2, y: -(tooltipHeight + parentHeight)}
+        },
+        RIGHT: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: -(tooltipWidth) + parentWidth, y: -(tooltipHeight + parentHeight)}
+        }
+    },
+    BOTTOM: {
+        LEFT: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: 0, y: 2 * parentHeight}
+        },
+        MIDDLE: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: -(tooltipWidth / 2) + parentWidth / 2, y: 2 * parentHeight}
+        },
+        RIGHT: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: -(tooltipWidth) + parentWidth, y: 2 * parentHeight}
+        }
+    },
+    LEFT: {
+        TOP: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: -(tooltipWidth + parentWidth), y: 0}
+        },
+        MIDDLE: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: -(tooltipWidth + parentWidth), y: -(tooltipHeight / 2) + parentHeight / 2}
+        },
+        BOTTOM: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: -(tooltipWidth + parentWidth), y: -(tooltipHeight) + parentHeight}
+        }
+    },
+    RIGHT: {
+        TOP: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: 2 * parentWidth, y: 0}
+        },
+        MIDDLE: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: 2 * parentWidth, y: -(tooltipHeight / 2) + parentHeight / 2}
+        },
+        BOTTOM: (parentX, parentY, parentWidth, parentHeight, tooltipWidth, tooltipHeight) => {
+            return {x: 2 * parentWidth, y: -(tooltipHeight) + parentHeight}
+        }
+    }
 }
 
 const canvasInit = (p) => {
@@ -27,7 +74,6 @@ const canvasInit = (p) => {
 
     const isInside = (box, p) => {
         const mouse = {x: p.mouseX * (1 / canvas.scale.x), y: p.mouseY * (1 / canvas.scale.y)};
-        // const mouse = {x: p.mouseX, y: p.mouseY};
         return mouse.x >= box.x && mouse.x <= box.x + box.width && mouse.y >= box.y && mouse.y <= box.y + box.height
     }
 
@@ -54,7 +100,9 @@ const canvasInit = (p) => {
 
     const iconsDraw = (icons) => {
         icons.forEach((iconParams, i) => {
-            p.image(icon, iconParams.x, iconParams.y, iconParams.width, iconParams.height);
+            if (elements.boxes[i].content.options.onHoverInfo) {
+                p.image(icon, iconParams.x, iconParams.y, iconParams.width, iconParams.height);
+            }
         });
     }
 
@@ -109,18 +157,25 @@ const canvasInit = (p) => {
             lines.push(currentLine);
 
             const rectWidth = 200;
-            const displacement = 20;
+            let displacementX = 0;
+            let displacementY = 0;
             const lineHeight = 15;
             const rectHeight = (lines.length * lineHeight) + 40;
 
-            p.rect(hoverInfo.icon.x + displacement, box.y, rectWidth, rectHeight);
+            if (elements.boxes[hoverInfo.icon.box].content.options.hoverInfoPos) {
+                const displacement = elements.boxes[hoverInfo.icon.box].content.options.hoverInfoPos(hoverInfo.icon.x, box.y, 10, 10, rectWidth, rectHeight);
+                displacementX = displacement.x;
+                displacementY = displacement.y;
+            }
+
+            p.rect(hoverInfo.icon.x + displacementX, box.y + displacementY, rectWidth, rectHeight);
 
             p.fill(0);
             p.textStyle(p.BOLD);
-            p.text(elements.boxes[hoverInfo.icon.box].title, hoverInfo.icon.x + displacement + rectWidth / 2, box.y + lineHeight);
+            p.text(elements.boxes[hoverInfo.icon.box].title, hoverInfo.icon.x + displacementX + rectWidth / 2, box.y + lineHeight + displacementY);
             p.textStyle(p.NORMAL);
             lines.forEach((line, i) => {
-                p.text(line, hoverInfo.icon.x + 20 + 100, box.y + (2 * lineHeight) + (i * lineHeight));
+                p.text(line, hoverInfo.icon.x + 100 + displacementX, box.y + (2 * lineHeight) + (i * lineHeight) + displacementY);
             });
 
             p.pop();
@@ -148,14 +203,27 @@ const canvasInit = (p) => {
             const maxWidth = [decodedText, binaryText, hexText].map((text) => p.textWidth(text)).max() + padding;
             const height = (p.textAscent() + p.textDescent());
 
-            p.rect(letter2Set.boundingBox.x - maxWidth / 2 + letter2Set.width / 2, letter2Set.boundingBox.y + letter2Set.height + padding / 2, maxWidth, 3 * ((height)) + padding);
+            let displacementX = 0;
+            let displacementY = 0;
+
+            if (elements.boxes[text.box].content.options.hoverTextPos) {
+                const displacement = elements.boxes[text.box].content.options.hoverTextPos(
+                    letter2Set.boundingBox.x, letter2Set.boundingBox.y,
+                    letter2Set.width, letter2Set.height,
+                    maxWidth, 3 * ((height)) + padding,
+                );
+                displacementX = displacement.x;
+                displacementY = displacement.y;
+            }
+
+            p.rect(letter2Set.boundingBox.x + displacementX, letter2Set.boundingBox.y + displacementY, maxWidth, 3 * ((height)) + padding);
 
             p.noFill();
             p.rect(letter2Set.boundingBox.x, letter2Set.boundingBox.y, letter2Set.width, letter2Set.height);
             p.fill(0)
-            p.text(decodedText, letter2Set.boundingBox.x + letter2Set.width / 2, letter2Set.boundingBox.y + letter2Set.height + padding / 2 + height);
-            p.text(binaryText, letter2Set.boundingBox.x + letter2Set.width / 2, letter2Set.boundingBox.y + letter2Set.height + padding / 2 + 2 * height);
-            p.text(hexText, letter2Set.boundingBox.x + letter2Set.width / 2, letter2Set.boundingBox.y + letter2Set.height + padding / 2 + 3 * height);
+            p.text(decodedText, letter2Set.boundingBox.x + displacementX + maxWidth / 2, letter2Set.boundingBox.y + displacementY + height);
+            p.text(binaryText, letter2Set.boundingBox.x + displacementX + maxWidth / 2, letter2Set.boundingBox.y + displacementY + 2 * height);
+            p.text(hexText, letter2Set.boundingBox.x + displacementX + maxWidth / 2, letter2Set.boundingBox.y + displacementY + 3 * height);
             p.pop();
         }
     }
@@ -189,6 +257,7 @@ const canvasInit = (p) => {
                     y: y,
                     width: p.textWidth(data),
                     height: textHeight,
+                    box: i,
                     boundingBox: {
                         x: x - (p.textWidth(data) / 2),
                         y: y - ((textHeight) / 2),
@@ -309,13 +378,9 @@ const canvasInit = (p) => {
         const connection = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1)) % elements.connectionAnimation.data.length;
         const cycle = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1) / elements.connectionAnimation.data.length) % elements.contents;
         animationParameters = {animationCycle: cycle, animationIndex: connection, dotFrame: dot};
-
-        canvas = {width: props.viewport.width * 0.95, height: props.viewport.height * 0.87};
-        const canvasResolution = CANVAS_SIZE(canvas);
-        if (canvas.width < VIRTUAL_RESOLUTIONS["720p"].width || canvas.height < VIRTUAL_RESOLUTIONS["720p"].height) {
-            canvas.width = VIRTUAL_RESOLUTIONS["720p"].width;
-            canvas.height = VIRTUAL_RESOLUTIONS["720p"].height;
-        }
+        const size = Math.min(props.viewport.width / 16, props.viewport.height / 9);
+        canvas = {width: 16 * size * 0.85, height: 9 * size * 0.85};
+        const canvasResolution = VIRTUAL_RESOLUTIONS["480p"]
         canvas.scale = {x: canvas.width / canvasResolution.width, y: canvas.height / canvasResolution.height};
     }
 
@@ -363,9 +428,18 @@ export const AnimationPlayer = ({elements}) => {
     const [isPlaying, setPlaying] = useState(false);
 
     useEffect(() => {
-        const frames = (1 / elements.connectionAnimation.options.speed) * elements.connectionAnimation.data.length * elements.contents;
+        console.log("Dots", (1 / elements.connectionAnimation.options.speed))
+        let frames = 0;
+        for (let i = 0; i < elements.contents; i++) {
+            for (let j = 0; j < elements.connectionAnimation.data.length; j++) {
+                for (let k = 0; k < (1 / elements.connectionAnimation.options.speed) + 1; k++) {
+                    frames++;
+                }
+            }
+        }
+        frames--;
         setFrameCount(frames);
-    }, []);
+    }, [elements]);
 
     useInterval(() => {
         if (isPlaying) {
@@ -385,8 +459,12 @@ export const AnimationPlayer = ({elements}) => {
             alignItems: "center"
         }
     }>
-        <ReactP5Wrapper sketch={canvasInit} elements={elements}
-                        frame={frame} viewport={viewport}/>
+        <ReactP5Wrapper
+            sketch={canvasInit}
+            elements={elements}
+            frame={frame}
+            viewport={viewport}
+        />
         <div style={
             {
                 display: "flex",
@@ -412,11 +490,14 @@ export const AnimationPlayer = ({elements}) => {
             <div>
                 <button
                     onClick={() => {
-                        if (frame > 0) {
-                            setFrame(frame - 1)
+                        let cycle = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1) / elements.connectionAnimation.data.length) % elements.contents;
+                        const dotCon = (((1 / elements.connectionAnimation.options.speed) + 1) * elements.connectionAnimation.data.length);
+                        if (cycle === 0) {
+                            cycle = elements.contents - 1;
                         } else {
-                            setFrame(frameCount)
+                            cycle--;
                         }
+                        setFrame(dotCon * cycle)
                     }}
                 >Previous
                 </button>
@@ -427,11 +508,14 @@ export const AnimationPlayer = ({elements}) => {
                 >{isPlaying ? 'Stop' : 'Play'}</button>
                 <button
                     onClick={() => {
-                        if (frame < frameCount) {
-                            setFrame(frame + 1)
+                        let cycle = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1) / elements.connectionAnimation.data.length) % elements.contents;
+                        const dotCon = (((1 / elements.connectionAnimation.options.speed) + 1) * elements.connectionAnimation.data.length);
+                        if (cycle === elements.contents - 1) {
+                            cycle = 0;
                         } else {
-                            setFrame(0)
+                            cycle++;
                         }
+                        setFrame(dotCon * cycle)
                     }}
                 >Next
                 </button>

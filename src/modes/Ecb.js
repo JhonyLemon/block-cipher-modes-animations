@@ -1,5 +1,5 @@
-import {encrypt, slice, wa2hex} from "../util/CryptoHelpers";
-import {SIDE} from "../components/AnimationPlayer";
+import {encrypt, slice, wa2hex, wa2str} from "../util/CryptoHelpers";
+import {SIDE, TOOLTIP_POSITION} from "../components/AnimationPlayer";
 import {
     AES_BOX_CONTENT,
     AES_DESCRIPTION,
@@ -15,7 +15,7 @@ const elements = (plaintextData, ciphertextData, key) => {
     return {
         boxes: [
             {
-                pos: {x: 0.5, y: 0.2},
+                pos: {x: 0.5, y: 0.1},
                 title: PLAINTEXT_TITLE,
                 description: PLAINTEXT_DESCRIPTION,
                 content: {
@@ -23,12 +23,14 @@ const elements = (plaintextData, ciphertextData, key) => {
                     options: {
                         textSize: 12,
                         onHoverInfo: true,
-                        onHoverText: true
+                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
+                        onHoverText: true,
+                        hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                     }
                 }
             },
             {
-                pos: {x: 0.2, y: 0.3},
+                pos: {x: 0.15, y: 0.5},
                 title: KEY_TITLE,
                 description: KEY_DESCRIPTION,
                 content: {
@@ -36,12 +38,14 @@ const elements = (plaintextData, ciphertextData, key) => {
                     options: {
                         textSize: 12,
                         onHoverInfo: true,
-                        onHoverText: true
+                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
+                        onHoverText: true,
+                        hoverTextPos: TOOLTIP_POSITION.RIGHT.MIDDLE
                     }
                 }
             },
             {
-                pos: {x: 0.5, y: 0.3},
+                pos: {x: 0.5, y: 0.5},
                 title: AES_TITLE,
                 description: AES_DESCRIPTION,
                 content: {
@@ -49,12 +53,13 @@ const elements = (plaintextData, ciphertextData, key) => {
                     options: {
                         textSize: 15,
                         onHoverInfo: true,
+                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                         onHoverText: false
                     }
                 }
             },
             {
-                pos: {x: 0.5, y: 0.4},
+                pos: {x: 0.5, y: 0.8},
                 title: CIPHERTEXT_TITLE,
                 description: CIPHERTEXT_DESCRIPTION,
                 content: {
@@ -62,7 +67,9 @@ const elements = (plaintextData, ciphertextData, key) => {
                     options: {
                         textSize: 12,
                         onHoverInfo: true,
-                        onHoverText: true
+                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
+                        onHoverText: true,
+                        hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
                     }
                 }
             }
@@ -114,6 +121,8 @@ export const ecb = (data, key, iv, blockSize, padding) => {
     const plaintextData = splicedData.map((d) => wa2hex(d));
     const ciphertextData = splicedData.map((d) => wa2hex(d))
         .map((d) => encrypt(d, key));
+
+    console.log(splicedData.map((d) => wa2str(d)));
 
     return elements(plaintextData, ciphertextData, key);
 }
