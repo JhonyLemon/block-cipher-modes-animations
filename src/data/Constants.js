@@ -1,8 +1,12 @@
 import CryptoJS from "crypto-js";
-import {generateIv, generateKey, str2wa} from "../util/CryptoHelpers";
+import {generateIv, generateKey, str2wa} from "../util/Helpers";
 import {ecb} from "../modes/Ecb";
 import {cbc} from "../modes/Cbc";
 import {cfb} from "../modes/Cfb";
+import {gcm} from "../modes/Gcm";
+import {ctr} from "../modes/Ctr";
+import {pcbc} from "../modes/Pcbc";
+import {ofb} from "../modes/Ofb";
 
 export const ECB_DESCRIPTION = 'The Electronic Codebook mode is the simplest mode of operation for a block cipher. It encrypts each block of data independently, which can lead to security vulnerabilities if the same plaintext block is encrypted with the same key.';
 
@@ -24,24 +28,24 @@ export const AVAILABLE_MODES = {
     },
     OFB: {
         name: 'OFB', description: 'Output feedback', animation: (data, key, iv, blockSize, padding) => {
-            return ecb(data, key, iv, blockSize, padding);
+            return ofb(data, key, iv, blockSize, padding);
         }
     },
     PCBC: {
         name: 'PCBC',
         description: 'Propagating cipher block chaining',
         animation: (data, key, iv, blockSize, padding) => {
-            return ecb(data, key, iv, blockSize, padding);
+            return pcbc(data, key, iv, blockSize, padding);
         }
     },
     CTR: {
         name: 'CTR', description: 'Counter', animation: (data, key, iv, blockSize, padding) => {
-            return ecb(data, key, iv, blockSize, padding);
+            return ctr(data, key, iv, blockSize, padding);
         }
     },
     GCM: {
         name: 'GCM', description: 'Galois/Counter mode', animation: (data, key, iv, blockSize, padding) => {
-            return ecb(data, key, iv, blockSize, padding);
+            return gcm(data, key, iv, blockSize, padding);
         }
     },
 };

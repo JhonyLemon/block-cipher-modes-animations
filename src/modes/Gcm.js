@@ -114,13 +114,15 @@ const elements = (plaintextData, ciphertextData, key) => {
     };
 }
 
-export const ecb = (data, key, iv, blockSize, padding) => {
+export const gcm = (data, key, iv, blockSize, padding) => {
     const paddedData = padding.pad(data, blockSize);
     const splicedData = slice(paddedData, blockSize);
 
     const plaintextData = splicedData.map((d) => wa2hex(d));
     const ciphertextData = splicedData.map((d) => wa2hex(d))
         .map((d) => encrypt(d, key));
+
+    console.log(splicedData.map((d) => wa2str(d)));
 
     return elements(plaintextData, ciphertextData, key);
 }

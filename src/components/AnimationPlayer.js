@@ -1,4 +1,4 @@
-import {hex2bin, hex2str} from "../util/CryptoHelpers";
+import {hex2bin, hex2str, replaceWhiteSpaceChars} from "../util/Helpers";
 import {VIRTUAL_RESOLUTIONS} from "../data/Constants";
 import React, {useEffect, useState} from "react";
 import useWindowSize from "../hooks/WindowSize";
@@ -195,7 +195,7 @@ const canvasInit = (p) => {
             const binary = hex2bin(byteHex);
             const decoded = hex2str(byteHex);
 
-            const decodedText = `String: ${decoded}`;
+            const decodedText = `String: ${replaceWhiteSpaceChars(decoded)}`;
             const binaryText = `Binary: ${binary}`;
             const hexText = `Hex: ${byteHex}`;
 
@@ -428,7 +428,6 @@ export const AnimationPlayer = ({elements}) => {
     const [isPlaying, setPlaying] = useState(false);
 
     useEffect(() => {
-        console.log("Dots", (1 / elements.connectionAnimation.options.speed))
         let frames = 0;
         for (let i = 0; i < elements.contents; i++) {
             for (let j = 0; j < elements.connectionAnimation.data.length; j++) {

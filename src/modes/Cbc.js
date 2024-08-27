@@ -1,4 +1,4 @@
-import {encrypt, slice, wa2hex, xor} from "../util/CryptoHelpers";
+import {encrypt, slice, wa2hex, xor} from "../util/Helpers";
 import {SIDE, TOOLTIP_POSITION} from "../components/AnimationPlayer";
 import {
     AES_BOX_CONTENT,

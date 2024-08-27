@@ -1,6 +1,6 @@
 import {useRef, useState} from "react";
 import Modal from "react-modal";
-import {ab2wa, str2wa, wa2str} from "../util/CryptoHelpers";
+import {ab2wa, str2wa, wa2str} from "../util/Helpers";
 
 export const DataInputModal = ({isOpen, setOpen, onClose, previousData, previousFile}) => {
     const [textData, setTextData] = useState((previousFile!==undefined && previousData!==null) ? '' : wa2str(previousData));

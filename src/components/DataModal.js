@@ -1,5 +1,5 @@
 import Modal from "react-modal";
-import {wa2str} from "../util/CryptoHelpers";
+import {wa2str} from "../util/Helpers";
 
 export const DataModal = ({isOpen, setOpen, data, file}) => {
     return (

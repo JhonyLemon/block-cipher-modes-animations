@@ -192,22 +192,15 @@ export const xor = (a, b) => {
     return res;
 }
 
-//    if (a.length !== b.length) {
-//         throw new Error('Both hexadecimal numbers must be the same length');
-//     }
-//
-//     let xorResult = '';
-//     for (let i = 0; i < a.length; i += 8) {
-//         const chunkA = parseInt(a.slice(i, i+8), 16);
-//         const chunkB = parseInt(b.slice(i, i+8), 16);
-//         console.log([a.slice(i, i+8), b.slice(i, i+8)], [chunkA, chunkB]);
-//         const xorChunk = (chunkA ^ chunkB).toString(16).padStart(8, '0');
-//
-//         // We should check if the length is less than 8, then fill it up with leading zeros.
-//         xorResult += xorChunk.length < 8 ? `0${xorChunk}` : xorChunk;
-//     }
-//
-//     return xorResult;
+export const replaceWhiteSpaceChars = (str) => {
+    return str
+        .replace(/\u0009/g, "HORIZONTAL_TAB")
+        .replace(/\u000A/g, "LINE_FEED")
+        .replace(/\u000B/g, "VERTICAL_TAB")
+        .replace(/\u000C/g, "FORM_FEED")
+        .replace(/\u000D/g, "CARRIAGE_RETURN")
+        .replace(/\u0020/g, "SPACE")
+}
 
 /**
  * Splits wordArray into blocks of blockSize bits.
