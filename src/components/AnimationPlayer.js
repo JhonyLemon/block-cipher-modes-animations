@@ -1,4 +1,4 @@
-import {hex2bin, hex2str, replaceWhiteSpaceChars} from "../util/Helpers";
+import {hex2bin, hex2str, lengthFromPoints, pointOnLine, replaceWhiteSpaceChars} from "../util/Helpers";
 import {VIRTUAL_RESOLUTIONS} from "../data/Constants";
 import React, {useEffect, useState} from "react";
 import useWindowSize from "../hooks/WindowSize";
@@ -6,10 +6,34 @@ import useInterval from "../hooks/Interval";
 import {ReactP5Wrapper} from "@p5-wrapper/react";
 
 export const SIDE = {
-    UP: {x: 0.5, y: 0, arrowX: 0, arrowY: -10, arrowAngle: Math.PI / 2},
-    RIGHT: {x: 1, y: 0.5, arrowX: 10, arrowY: 0, arrowAngle: Math.PI},
-    DOWN: {x: 0.5, y: 1, arrowX: 0, arrowY: 10, arrowAngle: -Math.PI / 2},
-    LEFT: {x: 0, y: 0.5, arrowX: -10, arrowY: 0, arrowAngle: 0}
+    UP: {
+        x: 0.5,
+        y: 0,
+        arrowX: 0,
+        arrowY: -10,
+        arrowAngle: Math.PI / 2
+    },
+    RIGHT: {
+        x: 1,
+        y: 0.5,
+        arrowX: 10,
+        arrowY: 0,
+        arrowAngle: Math.PI
+    },
+    DOWN: {
+        x: 0.5,
+        y: 1,
+        arrowX: 0,
+        arrowY: 10,
+        arrowAngle: -Math.PI / 2
+    },
+    LEFT: {
+        x: 0,
+        y: 0.5,
+        arrowX: -10,
+        arrowY: 0,
+        arrowAngle: 0
+    }
 }
 
 export const TOOLTIP_POSITION = {
@@ -111,7 +135,13 @@ const canvasInit = (p) => {
         connections.forEach((conn, i) => {
             const connection = elements.connections[i];
             p.stroke(connection.connectionColor);
-            p.line(conn.start.x, conn.start.y, conn.end.x, conn.end.y);
+
+            conn.points.forEach((point, j) => {
+                if (j !== 0 ) {
+                    p.line(conn.points[j - 1].x, conn.points[j - 1].y, point.x, point.y);
+                }
+            });
+            // p.line(conn.start.x, conn.start.y, conn.end.x, conn.end.y);
 
             p.push();
             p.noStroke();
@@ -329,8 +359,24 @@ const canvasInit = (p) => {
                 x: fromBox.x + (fromBox.width * startSide.x),
                 y: fromBox.y + (fromBox.height * startSide.y)
             };
-            const end = {x: toBox.x + (toBox.width * endSide.x), y: toBox.y + (toBox.height * endSide.y)};
-            connections.push({start: start, end: end});
+            const end = {
+                x: toBox.x + (toBox.width * endSide.x),
+                y: toBox.y + (toBox.height * endSide.y)
+            };
+
+            const connection = {start: start, end: end, points: []};
+
+            connection.points.push(start);
+
+            if ((startSide === SIDE.UP || startSide === SIDE.DOWN) && (endSide === SIDE.LEFT || endSide === SIDE.RIGHT)) {
+                connection.points.push({x: start.x, y: end.y})
+            } else if ((startSide === SIDE.LEFT || startSide === SIDE.RIGHT) && (endSide === SIDE.UP || endSide === SIDE.DOWN)) {
+                connection.points.push({x: end.x, y: start.y})
+            }
+
+            connection.points.push(end);
+
+            connections.push(connection);
         });
     }
 
@@ -341,9 +387,12 @@ const canvasInit = (p) => {
             data.animations.forEach((connectionIndex, j) => {
                 const frames = []
                 for (let k = 0; k <= 1; k = k + elements.connectionAnimation.options.speed) {
+
+                    const line = lengthFromPoints(connections[connectionIndex].points)
+                    const point = pointOnLine(connections[connectionIndex].points, line, line * k)
                     const dot = {
-                        x: p.lerp(connections[connectionIndex].start.x, connections[connectionIndex].end.x, k),
-                        y: p.lerp(connections[connectionIndex].start.y, connections[connectionIndex].end.y, k),
+                        x: point.x,
+                        y: point.y,
                         dotSize: elements.connections[connectionIndex].dotSize,
                         dotColor: elements.connections[connectionIndex].dotColor
                     }

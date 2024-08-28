@@ -1,4 +1,5 @@
 import CryptoJS from "crypto-js";
+import bigInt from "big-integer";
 
 /**
  * Generates a random encryption key of the specified size.
@@ -177,6 +178,24 @@ export const hex2str = (hex) => {
 }
 
 /**
+ * Converts hexadecimal string to a number.
+ * @param hex - The hexadecimal string to convert.
+ * @returns {BigInteger} The resulting number.
+ */
+export const hex2num = (hex) => {
+    return bigInt(hex, 16);
+}
+
+/**
+ * Converts a number to a hexadecimal string.
+ * @param {BigInteger} num - The number to convert.
+ * @returns {string} The resulting hexadecimal string.
+ */
+export const num2hex = (num) => {
+    return num.toString(16);
+}
+
+/**
  * Performs a bitwise XOR operation on two hexadecimal strings.
  *
  * @param {string} a - The first hexadecimal string.
@@ -192,6 +211,11 @@ export const xor = (a, b) => {
     return res;
 }
 
+/**
+ * Replaces whitespace characters with their respective names.
+ * @param {string} str - The string to replace the whitespace characters
+ * @returns {string} The resulting string with the whitespace characters replaced.
+ */
 export const replaceWhiteSpaceChars = (str) => {
     return str
         .replace(/\u0009/g, "HORIZONTAL_TAB")
@@ -221,4 +245,66 @@ export const slice = (wordArray, blockSize) => {
     }
     blocks = blocks.filter((block) => !block.words.every((word) => word === undefined));
     return blocks;
+}
+
+/**
+ * Calculates the length of a line segment defined by two points
+ * @param point0
+ * @param point1
+ * @returns {number} The length of the line segment.
+ */
+export const length = (point0, point1) => {
+    return Math.sqrt(Math.pow(point1.x - point0.x, 2) + Math.pow(point1.y - point0.y, 2));
+}
+
+/**
+ * Calculates the total length of a path defined by an array of points.
+ * @param points - The array of points defining the path.
+ * @returns {number} The total length of the path.
+ */
+export const lengthFromPoints = (points) => {
+    let totalLength = 0;
+    for (let i = 0; i < points.length - 1; i++) {
+        totalLength += length(points[i], points[i + 1]);
+    }
+    return totalLength;
+}
+
+export const pointOnLine = (points, totalLength, distance) => {
+    let currentLength = 0;
+    let distanceSup = distance
+    for (let i = 0; i < points.length - 1; i++) {
+        const segmentLength = length(points[i], points[i + 1]);
+        if ((currentLength + segmentLength) < distance) {
+            currentLength += segmentLength;
+            distanceSup = distanceSup - segmentLength;
+        } else if (points[i].x === points[i + 1].x) {
+            if (points[i].y < points[i + 1].y) {
+                return {
+                    x: points[i].x,
+                    y: points[i].y + (distanceSup)
+                }
+            } else {
+                return {
+                    x: points[i].x,
+                    y: points[i].y - (distanceSup)
+                }
+            }
+        } else if (points[i].y === points[i + 1].y) {
+            if (points[i].x < points[i + 1].x) {
+                return {
+                    x: points[i].x + (distanceSup),
+                    y: points[i].y
+                }
+            } else {
+                return {
+                    x: points[i].x - (distanceSup),
+                    y: points[i].y
+                }
+            }
+        } else {
+            throw new Error('Something weird happened')
+        }
+    }
+    return points[points.length - 1];
 }
