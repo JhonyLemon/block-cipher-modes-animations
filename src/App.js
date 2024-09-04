@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     DEFAULT_DATA,
     DEFAULT_MODE,
@@ -14,6 +14,7 @@ import {DataInputModal} from "./components/DataInputModal";
 import {DataModal} from "./components/DataModal";
 import information from "./information.png";
 import {Tooltip} from "react-tooltip";
+import {sha1} from "object-hash";
 
 Array.prototype.max = function () {
     return Math.max.apply(null, this);
@@ -42,6 +43,18 @@ const App = () => {
     const [isCipherDataModalOpen, setCipherDataModalOpen] = useState(false);
 
     Modal.setAppElement('#root');
+
+    const [elements, setElements] = useState(mode.animation(data,key,iv,blockSize,padding));
+    const [elementsHash, setElementsHash] = useState(sha1(elements));
+
+    useEffect(() => {
+        const newElements = mode.animation(data,key,iv,blockSize,padding);
+        const newElementsHash = sha1(newElements);
+        if (newElementsHash !== elementsHash) {
+            setElements(newElements);
+            setElementsHash(newElementsHash);
+        }
+    }, [key, iv, blockSize, padding, mode, data, file]);
 
     return (
         <div
@@ -172,7 +185,7 @@ const App = () => {
                     }
                 }
             >
-                <AnimationPlayer elements={mode.animation(data,key,iv,blockSize,padding)}/>
+                <AnimationPlayer elements={elements} elementsHash={elementsHash}/>
             </div>
 
         </div>

@@ -15,7 +15,7 @@ const elements = (plaintextData, ivData, xoredPlainIv, newIVs, ciphertextData, k
 
     return {
         boxes: [
-            {
+            ...(new Array(length).fill([{
                 pos: {x: 0.5, y: 0.1},
                 title: PLAINTEXT_TITLE,
                 description: PLAINTEXT_DESCRIPTION,
@@ -163,10 +163,10 @@ const elements = (plaintextData, ivData, xoredPlainIv, newIVs, ciphertextData, k
                         hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
                     }
                 }
-            }
+            }]))
         ],
         connections: [
-            {
+            ...(new Array(length).fill([{
                 from: {boxId: 0, arrowOut: SIDE.DOWN},
                 to: {boxId: 2, arrowIn: SIDE.UP},
                 connectionColor: 'black',
@@ -246,17 +246,17 @@ const elements = (plaintextData, ivData, xoredPlainIv, newIVs, ciphertextData, k
                 arrowSize: 10,
                 dotSize: 5,
                 dotColor: 'red'
-            }
+            }]))
         ],
         connectionAnimation: {
             data: [
-                {animations: [0, 1]},
+                ...(new Array(length).fill([{animations: [0, 1]},
                 {animations: [2]},
                 {animations: [3]},
                 {animations: [4, 5]},
                 {animations: [6, 9]},
                 {animations: [8]},
-                {animations: [7]}
+                {animations: [7]}]))
             ],
             options: {
                 speed: 0.25

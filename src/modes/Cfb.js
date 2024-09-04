@@ -14,7 +14,7 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
     const length = Math.max(plaintextData.length, ciphertextData.length, ivData.length, semiEncrypted.length);
     return {
         boxes: [
-            {
+            ...(new Array(length).fill([{
                 pos: {x: 0.5, y: 0.1},
                 title: IV_TITLE,
                 description: IV_DESCRIPTION,
@@ -129,10 +129,10 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                         onHoverText: false
                     }
                 }
-            }
+            }]))
         ],
         connections: [
-            {
+                ...(new Array(length).fill([{
                 from: {boxId: 0, arrowOut: SIDE.DOWN},
                 to: {boxId: 2, arrowIn: SIDE.UP},
                 connectionColor: 'black',
@@ -188,15 +188,15 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                 dotSize: 5,
                 dotColor: 'red'
             }
-        ],
+        ]))],
         connectionAnimation: {
             data: [
-                {animations: [0, 1]},
+                ...(new Array(length).fill([{animations: [0, 1]},
                 {animations: [2]},
                 {animations: [3, 4]},
                 {animations: [5]},
                 {animations: [6]}
-            ],
+            ]))],
             options: {
                 speed: 0.25
             }

@@ -14,7 +14,7 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
     const length = Math.max(plaintextData.length, ivData.length, semiEncrypted.length, ciphertextData.length);
     return {
         boxes: [
-            {
+            ...(new Array(length).fill([{
                 pos: {x: 0.5, y: 0.1},
                 title: 'CTR',
                 description: 'CTR',
@@ -53,8 +53,9 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                     options: {
                         textSize: 12,
                         onHoverInfo: true,
-                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
-                        onHoverText: true
+                        hoverInfoPos: TOOLTIP_POSITION.BOTTOM.LEFT,
+                        onHoverText: true,
+                        hoverTextPos: TOOLTIP_POSITION.RIGHT.MIDDLE
                     }
                 }
             },
@@ -66,7 +67,7 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                     data: semiEncrypted,
                     options: {
                         textSize: 12,
-                        onHoverInfo: true,
+                        onHoverInfo: false,
                         hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
                         onHoverText: true,
                         hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
@@ -113,14 +114,14 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                         textSize: 12,
                         onHoverInfo: true,
                         hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
-                        onHoverText: false,
+                        onHoverText: true,
                         hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
                     }
                 }
-            },
+            }])),
         ],
         connections: [
-            {
+            ...(new Array(length).fill([{
                 from: {boxId: 0, arrowOut: SIDE.DOWN},
                 to: {boxId: 1, arrowIn: SIDE.UP},
                 connectionColor: 'black',
@@ -167,14 +168,14 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                 arrowSize: 10,
                 dotSize: 5,
                 dotColor: 'red'
-            }
+            }]))
         ],
         connectionAnimation: {
             data: [
-                {animations: [0, 1]},
+                ...(new Array(length).fill([{animations: [0, 1]},
                 {animations: [2]},
                 {animations: [3,4]},
-                {animations: [5]},
+                {animations: [5]}])),
             ],
             options: {
                 speed: 0.25

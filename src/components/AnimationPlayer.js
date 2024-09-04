@@ -1,4 +1,11 @@
-import {hex2bin, hex2str, lengthFromPoints, pointOnLine, replaceWhiteSpaceChars} from "../util/Helpers";
+import {
+    getAnimationIndices, getFrame,
+    hex2bin,
+    hex2str,
+    lengthFromPoints,
+    pointOnLine,
+    replaceWhiteSpaceChars
+} from "../util/Helpers";
 import {VIRTUAL_RESOLUTIONS} from "../data/Constants";
 import React, {useEffect, useState} from "react";
 import useWindowSize from "../hooks/WindowSize";
@@ -95,6 +102,7 @@ const canvasInit = (p) => {
     let hoverInfo = {};
     let hoverText = {};
     let canvas = {width: 0, height: 0, scale: {x: 1, y: 1}};
+    let isSetup = false;
 
     const isInside = (box, p) => {
         const mouse = {x: p.mouseX * (1 / canvas.scale.x), y: p.mouseY * (1 / canvas.scale.y)};
@@ -103,7 +111,7 @@ const canvasInit = (p) => {
 
     const boxesDraw = (boxes) => {
         p.push();
-        boxes.forEach((box, i) => {
+        boxes[animationParameters.animationCycle].forEach((box, i) => {
             p.fill(255);
             p.rect(box.x, box.y, box.width, box.height);
         });
@@ -112,19 +120,20 @@ const canvasInit = (p) => {
 
     const textsDraw = (texts) => {
         p.push();
-        texts.forEach((text, i) => {
+        texts[animationParameters.animationCycle].forEach((text, i) => {
             const singleText = text[animationParameters.animationCycle];
+            // console.log(singleText, text, i, animationParameters.animationCycle, texts)
             p.fill(0);
             p.textStyle(p.NORMAL);
-            p.textSize(elements.boxes[i].content.options.textSize);
+            p.textSize(elements.boxes[animationParameters.animationCycle][i].content.options.textSize);
             p.text(singleText.data, singleText.x, singleText.y);
         });
         p.pop();
     }
 
     const iconsDraw = (icons) => {
-        icons.forEach((iconParams, i) => {
-            if (elements.boxes[i].content.options.onHoverInfo) {
+        icons[animationParameters.animationCycle].forEach((iconParams, i) => {
+            if (elements.boxes[animationParameters.animationCycle][i].content.options.onHoverInfo) {
                 p.image(icon, iconParams.x, iconParams.y, iconParams.width, iconParams.height);
             }
         });
@@ -132,12 +141,12 @@ const canvasInit = (p) => {
 
     const connectionsDraw = (connections) => {
         p.push();
-        connections.forEach((conn, i) => {
-            const connection = elements.connections[i];
+        connections[animationParameters.animationCycle].forEach((conn, i) => {
+            const connection = elements.connections[animationParameters.animationCycle][i];
             p.stroke(connection.connectionColor);
 
             conn.points.forEach((point, j) => {
-                if (j !== 0 ) {
+                if (j !== 0) {
                     p.line(conn.points[j - 1].x, conn.points[j - 1].y, point.x, point.y);
                 }
             });
@@ -147,7 +156,7 @@ const canvasInit = (p) => {
             p.noStroke();
             p.translate(conn.end.x + connection.to.arrowIn.arrowX, conn.end.y + connection.to.arrowIn.arrowY);
             p.rotate(connection.to.arrowIn.arrowAngle);
-            p.fill(elements.connections[i].connectionColor);
+            p.fill(elements.connections[animationParameters.animationCycle][i].connectionColor);
             p.triangle(0, connection.arrowSize / 2, 0, -connection.arrowSize / 2, connection.arrowSize, 0)
             p.pop()
         });
@@ -156,7 +165,7 @@ const canvasInit = (p) => {
 
     const dotsDraw = (dots) => {
         p.push();
-        dots[animationParameters.animationIndex].forEach((dotConnection, i) => {
+        dots[animationParameters.animationCycle][animationParameters.animationIndex].forEach((dotConnection, i) => {
             const dot = dotConnection[animationParameters.dotFrame];
             p.stroke(dot.dotColor);
             p.strokeWeight(dot.dotSize);
@@ -169,8 +178,8 @@ const canvasInit = (p) => {
         if (hoverInfo.icon !== undefined && Object.keys(hoverInfo.icon).length > 0) {
             p.push();
             p.fill(255);
-            const box = boxes[hoverInfo.icon.box];
-            const words = elements.boxes[hoverInfo.icon.box].description.split(' ');
+            const box = boxes[animationParameters.animationCycle][hoverInfo.icon.box];
+            const words = elements.boxes[animationParameters.animationCycle][hoverInfo.icon.box].description.split(' ');
             const lines = [];
             let currentLine = '';
 
@@ -192,8 +201,8 @@ const canvasInit = (p) => {
             const lineHeight = 15;
             const rectHeight = (lines.length * lineHeight) + 40;
 
-            if (elements.boxes[hoverInfo.icon.box].content.options.hoverInfoPos) {
-                const displacement = elements.boxes[hoverInfo.icon.box].content.options.hoverInfoPos(hoverInfo.icon.x, box.y, 10, 10, rectWidth, rectHeight);
+            if (elements.boxes[animationParameters.animationCycle][hoverInfo.icon.box].content.options.hoverInfoPos) {
+                const displacement = elements.boxes[animationParameters.animationCycle][hoverInfo.icon.box].content.options.hoverInfoPos(hoverInfo.icon.x, box.y, 10, 10, rectWidth, rectHeight);
                 displacementX = displacement.x;
                 displacementY = displacement.y;
             }
@@ -202,7 +211,7 @@ const canvasInit = (p) => {
 
             p.fill(0);
             p.textStyle(p.BOLD);
-            p.text(elements.boxes[hoverInfo.icon.box].title, hoverInfo.icon.x + displacementX + rectWidth / 2, box.y + lineHeight + displacementY);
+            p.text(elements.boxes[animationParameters.animationCycle][hoverInfo.icon.box].title, hoverInfo.icon.x + displacementX + rectWidth / 2, box.y + lineHeight + displacementY);
             p.textStyle(p.NORMAL);
             lines.forEach((line, i) => {
                 p.text(line, hoverInfo.icon.x + 100 + displacementX, box.y + (2 * lineHeight) + (i * lineHeight) + displacementY);
@@ -213,10 +222,10 @@ const canvasInit = (p) => {
     }
 
     const tooltipTextDraw = (hoverText) => {
-        if (hoverText.index !== undefined && isInside(texts[hoverText.index][animationParameters.animationCycle].boundingBox, p)) {
+        if (hoverText.index !== undefined && isInside(texts[animationParameters.animationCycle][hoverText.index][animationParameters.animationCycle].boundingBox, p)) {
             p.push();
             p.fill(255);
-            const text = texts[hoverText.index][animationParameters.animationCycle];
+            const text = texts[animationParameters.animationCycle][hoverText.index][animationParameters.animationCycle];
             const [letter2Set] = text.letters2.filter((letter) => {
                 return isInside(letter.boundingBox, p)
             });
@@ -236,8 +245,8 @@ const canvasInit = (p) => {
             let displacementX = 0;
             let displacementY = 0;
 
-            if (elements.boxes[text.box].content.options.hoverTextPos) {
-                const displacement = elements.boxes[text.box].content.options.hoverTextPos(
+            if (elements.boxes[animationParameters.animationCycle][text.box].content.options.hoverTextPos) {
+                const displacement = elements.boxes[animationParameters.animationCycle][text.box].content.options.hoverTextPos(
                     letter2Set.boundingBox.x, letter2Set.boundingBox.y,
                     letter2Set.width, letter2Set.height,
                     maxWidth, 3 * ((height)) + padding,
@@ -262,145 +271,162 @@ const canvasInit = (p) => {
         boxes = [];
         texts = [];
         icons = [];
-        elements.boxes.forEach((box, i) => {
-            const x = (box.pos.x * p.width) * (1 / canvas.scale.x);
-            const y = (box.pos.y * p.height) * (1 / canvas.scale.y);
-            const boxWidth = box.content.data.map((data) => {
-                return p.textWidth(data);
-            }).max() + 30;
+        elements.boxes.forEach((boxesList) => {
+            const boxList = [];
+            const textList = [];
+            const iconList = [];
 
-            const textHeight = p.textAscent() + p.textDescent();
+            boxesList.forEach((box, i) => {
 
-            const boxHeight = textHeight + (35 * (1 / canvas.scale.y));
+                const x = (box.pos.x * p.width) * (1 / canvas.scale.x);
+                const y = (box.pos.y * p.height) * (1 / canvas.scale.y);
+                const boxWidth = box.content.data.map((data) => {
+                    return p.textWidth(data);
+                }).max() + 30;
 
-            boxes.push({
-                x: x - (boxWidth / 2),
-                y: y - (boxHeight / 2),
-                width: boxWidth,
-                height: boxHeight
-            });
+                const textHeight = p.textAscent() + p.textDescent();
 
-            texts.push(box.content.data.map((data, j) => {
-                return {
-                    data: data,
-                    x: x,
-                    y: y,
-                    width: p.textWidth(data),
-                    height: textHeight,
-                    box: i,
-                    boundingBox: {
-                        x: x - (p.textWidth(data) / 2),
-                        y: y - ((textHeight) / 2),
-                        width: p.textWidth(data),
-                        height: textHeight
-                    },
-                    letters: [...data].map((letter, k) => {
-                        return {
-                            letter: letter,
-                            x: x,
-                            y: y,
-                            width: p.textWidth(letter),
-                            height: textHeight
-                        }
-                    })
-                }
-            }));
+                const boxHeight = textHeight + (35 * (1 / canvas.scale.y));
 
-            texts[i].forEach((text, j) => {
-                const splitData = text.data.match(/.{1,2}/g);
-                text.letters2 = splitData.map((data, k) => {
+                boxList.push({
+                    x: x - (boxWidth / 2),
+                    y: y - (boxHeight / 2),
+                    width: boxWidth,
+                    height: boxHeight
+                });
+
+                textList.push(box.content.data.map((data, j) => {
                     return {
                         data: data,
                         x: x,
                         y: y,
                         width: p.textWidth(data),
-                        height: textHeight
+                        height: textHeight,
+                        box: i,
+                        boundingBox: {
+                            x: x - (p.textWidth(data) / 2),
+                            y: y - ((textHeight) / 2),
+                            width: p.textWidth(data),
+                            height: textHeight
+                        },
+                        letters: [...data].map((letter, k) => {
+                            return {
+                                letter: letter,
+                                x: x,
+                                y: y,
+                                width: p.textWidth(letter),
+                                height: textHeight
+                            }
+                        })
                     }
-                });
-            });
+                }));
 
-            texts[i].forEach((text, j) => {
-                text.letters.forEach((letter, k) => {
-                    letter.x += text.letters.slice(0, k).reduce((acc, curr) => acc + curr.width, 0);
-                    letter.boundingBox = {
-                        x: letter.x - text.width / 2,
-                        y: letter.y - (text.height / 2),
-                        width: letter.width,
-                        height: letter.height
-                    }
+                textList[i].forEach((text, j) => {
+                    const splitData = text.data.match(/.{1,2}/g);
+                    text.letters2 = splitData.map((data, k) => {
+                        return {
+                            data: data,
+                            x: x,
+                            y: y,
+                            width: p.textWidth(data),
+                            height: textHeight
+                        }
+                    });
                 });
-                text.letters2.forEach((letter, k) => {
-                    letter.x += text.letters2.slice(0, k).reduce((acc, curr) => acc + curr.width, 0);
-                    letter.boundingBox = {
-                        x: letter.x - text.width / 2,
-                        y: letter.y - (text.height / 2),
-                        width: letter.width,
-                        height: letter.height
-                    }
-                });
-            });
 
-            const padding = 2;
-            const iconSize = 10;
-            const iconX = (boxes[i].x + boxes[i].width - iconSize) - padding;
-            const iconY = (boxes[i].y) + padding;
-            icons.push({x: iconX, y: iconY, width: iconSize, height: iconSize, box: i});
+                textList[i].forEach((text, j) => {
+                    text.letters.forEach((letter, k) => {
+                        letter.x += text.letters.slice(0, k).reduce((acc, curr) => acc + curr.width, 0);
+                        letter.boundingBox = {
+                            x: letter.x - text.width / 2,
+                            y: letter.y - (text.height / 2),
+                            width: letter.width,
+                            height: letter.height
+                        }
+                    });
+                    text.letters2.forEach((letter, k) => {
+                        letter.x += text.letters2.slice(0, k).reduce((acc, curr) => acc + curr.width, 0);
+                        letter.boundingBox = {
+                            x: letter.x - text.width / 2,
+                            y: letter.y - (text.height / 2),
+                            width: letter.width,
+                            height: letter.height
+                        }
+                    });
+                });
+
+                const padding = 2;
+                const iconSize = 10;
+                const iconX = (boxList[i].x + boxList[i].width - iconSize) - padding;
+                const iconY = (boxList[i].y) + padding;
+                iconList.push({x: iconX, y: iconY, width: iconSize, height: iconSize, box: i});
+            });
+            boxes.push(boxList);
+            texts.push(textList);
+            icons.push(iconList);
         });
     }
 
     const connectionsInit = () => {
         connections = [];
-        elements.connections.forEach((conn, i) => {
-            const fromBox = boxes[conn.from.boxId];
-            const toBox = boxes[conn.to.boxId];
-            const startSide = conn.from.arrowOut;
-            const endSide = conn.to.arrowIn;
-            const start = {
-                x: fromBox.x + (fromBox.width * startSide.x),
-                y: fromBox.y + (fromBox.height * startSide.y)
-            };
-            const end = {
-                x: toBox.x + (toBox.width * endSide.x),
-                y: toBox.y + (toBox.height * endSide.y)
-            };
+        elements.connections.forEach((connectionsList, i) => {
+            const connectionList = [];
+            connectionsList.forEach((conn, j) => {
+                const fromBox = boxes[i][conn.from.boxId];
+                const toBox = boxes[i][conn.to.boxId];
+                const startSide = conn.from.arrowOut;
+                const endSide = conn.to.arrowIn;
+                const start = {
+                    x: fromBox.x + (fromBox.width * startSide.x),
+                    y: fromBox.y + (fromBox.height * startSide.y)
+                };
+                const end = {
+                    x: toBox.x + (toBox.width * endSide.x),
+                    y: toBox.y + (toBox.height * endSide.y)
+                };
 
-            const connection = {start: start, end: end, points: []};
+                const connection = {start: start, end: end, points: []};
 
-            connection.points.push(start);
+                connection.points.push(start);
 
-            if ((startSide === SIDE.UP || startSide === SIDE.DOWN) && (endSide === SIDE.LEFT || endSide === SIDE.RIGHT)) {
-                connection.points.push({x: start.x, y: end.y})
-            } else if ((startSide === SIDE.LEFT || startSide === SIDE.RIGHT) && (endSide === SIDE.UP || endSide === SIDE.DOWN)) {
-                connection.points.push({x: end.x, y: start.y})
-            }
+                if ((startSide === SIDE.UP || startSide === SIDE.DOWN) && (endSide === SIDE.LEFT || endSide === SIDE.RIGHT)) {
+                    connection.points.push({x: start.x, y: end.y})
+                } else if ((startSide === SIDE.LEFT || startSide === SIDE.RIGHT) && (endSide === SIDE.UP || endSide === SIDE.DOWN)) {
+                    connection.points.push({x: end.x, y: start.y})
+                }
 
-            connection.points.push(end);
+                connection.points.push(end);
 
-            connections.push(connection);
+                connectionList.push(connection);
+            });
+            connections.push(connectionList);
         });
     }
 
     const connectionsAnimationsInit = () => {
         dots = [];
-        elements.connectionAnimation.data.forEach((data, i) => {
-            const dotConnection = []
-            data.animations.forEach((connectionIndex, j) => {
-                const frames = []
-                for (let k = 0; k <= 1; k = k + elements.connectionAnimation.options.speed) {
-
-                    const line = lengthFromPoints(connections[connectionIndex].points)
-                    const point = pointOnLine(connections[connectionIndex].points, line, line * k)
-                    const dot = {
-                        x: point.x,
-                        y: point.y,
-                        dotSize: elements.connections[connectionIndex].dotSize,
-                        dotColor: elements.connections[connectionIndex].dotColor
+        elements.connectionAnimation.data.forEach((dataList, i) => {
+            const dotList = [];
+            dataList.forEach((data, j) => {
+                const dotConnection = []
+                data.animations.forEach((connectionIndex, k) => {
+                    const frames = []
+                    for (let k = 0; k <= 1; k = k + elements.connectionAnimation.options.speed) {
+                        const line = lengthFromPoints(connections[i][connectionIndex].points)
+                        const point = pointOnLine(connections[i][connectionIndex].points, line, line * k)
+                        const dot = {
+                            x: point.x,
+                            y: point.y,
+                            dotSize: elements.connections[i][connectionIndex].dotSize,
+                            dotColor: elements.connections[i][connectionIndex].dotColor
+                        }
+                        frames.push(dot);
                     }
-                    frames.push(dot);
-                }
-                dotConnection.push(frames);
+                    dotConnection.push(frames);
+                });
+                dotList.push(dotConnection);
             });
-            dots.push(dotConnection);
+            dots.push(dotList);
         });
     }
 
@@ -416,35 +442,38 @@ const canvasInit = (p) => {
         boxesTextIconInit();
         connectionsInit()
         connectionsAnimationsInit()
-
+        isSetup = true;
     }
 
     p.updateWithProps = (props) => {
         elements = props.elements;
 
-        const frame = props.frame;
-        const dot = frame % ((1 / elements.connectionAnimation.options.speed) + 1);
-        const connection = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1)) % elements.connectionAnimation.data.length;
-        const cycle = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1) / elements.connectionAnimation.data.length) % elements.contents;
-        animationParameters = {animationCycle: cycle, animationIndex: connection, dotFrame: dot};
+        const animationIndeces = getAnimationIndices(elements, props.frame);
+        animationParameters = {animationCycle: animationIndeces.cycleIndex, animationIndex: animationIndeces.connectionIndex, dotFrame: animationIndeces.dotIndex};
         const size = Math.min(props.viewport.width / 16, props.viewport.height / 9);
         canvas = {width: 16 * size * 0.85, height: 9 * size * 0.85};
         const canvasResolution = VIRTUAL_RESOLUTIONS["480p"]
         canvas.scale = {x: canvas.width / canvasResolution.width, y: canvas.height / canvasResolution.height};
+
+        if (isSetup) {
+            boxesTextIconInit()
+            connectionsInit()
+            connectionsAnimationsInit()
+        }
     }
 
     p.mouseMoved = () => {
         let hovered = {}
-        icons.forEach((icon, i) => {
-            if (isInside(icon, p) && elements.boxes[i].content.options.onHoverInfo) {
+        icons[animationParameters.animationCycle]?.forEach((icon, i) => {
+            if (isInside(icon, p) && elements.boxes[animationParameters.animationCycle][i].content.options.onHoverInfo) {
                 hovered = icon
             }
         });
         hoverInfo = {mouseX: p.mouseX, mouseY: p.mouseY, icon: hovered};
         hovered = {}
-        texts.forEach((allTexts, i) => {
+        texts[animationParameters.animationCycle]?.forEach((allTexts, i) => {
             const text = allTexts[animationParameters.animationCycle];
-            if (isInside(text.boundingBox, p) && elements.boxes[i].content.options.onHoverText) {
+            if (isInside(text.boundingBox, p) && elements.boxes[animationParameters.animationCycle][i].content.options.onHoverText) {
                 hovered = {index: i};
             }
         });
@@ -456,10 +485,6 @@ const canvasInit = (p) => {
         p.scale(canvas.scale.x, canvas.scale.y);
         p.background(240);
 
-        boxesTextIconInit()
-        connectionsInit()
-        connectionsAnimationsInit()
-
         boxesDraw(boxes);
         textsDraw(texts);
         iconsDraw(icons);
@@ -470,7 +495,7 @@ const canvasInit = (p) => {
     }
 };
 
-export const AnimationPlayer = ({elements}) => {
+export const AnimationPlayer = ({elements, elementsHash}) => {
     const [frameCount, setFrameCount] = useState(0);
     const [frame, setFrame] = useState(0);
     const viewport = useWindowSize();
@@ -479,15 +504,14 @@ export const AnimationPlayer = ({elements}) => {
     useEffect(() => {
         let frames = 0;
         for (let i = 0; i < elements.contents; i++) {
-            for (let j = 0; j < elements.connectionAnimation.data.length; j++) {
+            for (let j = 0; j < elements.connectionAnimation.data[i].length; j++) {
                 for (let k = 0; k < (1 / elements.connectionAnimation.options.speed) + 1; k++) {
                     frames++;
                 }
             }
         }
-        frames--;
         setFrameCount(frames);
-    }, [elements]);
+    }, [elementsHash]);
 
     useInterval(() => {
         if (isPlaying) {
@@ -538,14 +562,12 @@ export const AnimationPlayer = ({elements}) => {
             <div>
                 <button
                     onClick={() => {
-                        let cycle = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1) / elements.connectionAnimation.data.length) % elements.contents;
-                        const dotCon = (((1 / elements.connectionAnimation.options.speed) + 1) * elements.connectionAnimation.data.length);
-                        if (cycle === 0) {
-                            cycle = elements.contents - 1;
+                        const animIndices = getAnimationIndices(elements, frame);
+                        if (animIndices.cycleIndex === 0) {
+                            setFrame(getFrame(elements, elements.contents - 1, 0, 0))
                         } else {
-                            cycle--;
+                            setFrame(getFrame(elements, animIndices.cycleIndex - 1, 0, 0))
                         }
-                        setFrame(dotCon * cycle)
                     }}
                 >Previous
                 </button>
@@ -556,14 +578,12 @@ export const AnimationPlayer = ({elements}) => {
                 >{isPlaying ? 'Stop' : 'Play'}</button>
                 <button
                     onClick={() => {
-                        let cycle = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1) / elements.connectionAnimation.data.length) % elements.contents;
-                        const dotCon = (((1 / elements.connectionAnimation.options.speed) + 1) * elements.connectionAnimation.data.length);
-                        if (cycle === elements.contents - 1) {
-                            cycle = 0;
+                        const animIndices = getAnimationIndices(elements, frame);
+                        if (animIndices.cycleIndex === elements.contents - 1) {
+                            setFrame(getFrame(elements, 0, 0, 0))
                         } else {
-                            cycle++;
+                            setFrame(getFrame(elements, animIndices.cycleIndex + 1, 0, 0))
                         }
-                        setFrame(dotCon * cycle)
                     }}
                 >Next
                 </button>

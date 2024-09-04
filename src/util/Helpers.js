@@ -203,12 +203,9 @@ export const num2hex = (num) => {
  * @returns {string} The resulting hexadecimal string after XOR operation.
  */
 export const xor = (a, b) => {
-    let res = "",
-        i = a.length,
-        j = b.length;
-    while (i-->0 && j-->0)
-        res = (parseInt(a.charAt(i), 16) ^ parseInt(b.charAt(j), 16)).toString(16) + res;
-    return res;
+    const aNum = bigInt(a, 16);
+    const bNum = bigInt(b, 16);
+    return aNum.xor(bNum).toString(16).padStart(a.length, '0');
 }
 
 /**
@@ -307,4 +304,112 @@ export const pointOnLine = (points, totalLength, distance) => {
         }
     }
     return points[points.length - 1];
+}
+
+/**
+ * Calculates the indices of the elements to animate.
+ * @param {dict} elements - The elements to animate.
+ * @param {number} frame - The current frame.
+ * @returns {dict} The indices of the elements to animate.
+ */
+export const getAnimationIndices = (elements, frame) => {
+    let cycleIndex = 0;
+    let dotIndex = 0;
+    let connectionIndex = 0;
+
+
+    let tempFrame = 0;
+    for (let i = 0; i < elements.contents; i++) {
+        for (let j = 0; j < elements.connectionAnimation.data[i].length; j++) {
+            for (let k = 0; k < ((1 / elements.connectionAnimation.options.speed) + 1); k++) {
+                tempFrame++;
+                if (tempFrame === frame) {
+                    cycleIndex = i;
+                    connectionIndex = j;
+                    dotIndex = k;
+                    console.log('getAnimationIndices', 'frame', frame,'cycleIndex', cycleIndex, 'connectionIndex', connectionIndex, 'dotIndex', dotIndex)
+                    return {cycleIndex: cycleIndex, dotIndex: dotIndex, connectionIndex: connectionIndex};
+                }
+            }
+        }
+    }
+    //
+    // let calculatedFrame = 0;
+    // for (let i = 0; i < elements.contents; i++) {
+    //     calculatedFrame = (i+1)*((1 / elements.connectionAnimation.options.speed)+1)*elements.connectionAnimation.data[i].length;
+    //     if (frame < calculatedFrame) {
+    //         cycleIndex = i;
+    //         dotIndex = frame % ((1 / elements.connectionAnimation.options.speed) + 1);
+    //         connectionIndex = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1)) % elements.connectionAnimation.data[i].length;
+    //         console.log('getAnimationIndices', 'calculatedFrame', calculatedFrame, 'frame', frame, 'cycleIndex', cycleIndex, 'connectionIndex', connectionIndex, 'dotIndex', dotIndex)
+    //         break;
+    //     }
+    // }
+    // console.log('getAnimationIndices','cycleIndex', cycleIndex, 'connectionIndex', connectionIndex, 'dotIndex', dotIndex)
+    //
+    return {cycleIndex: cycleIndex, dotIndex: dotIndex, connectionIndex: connectionIndex};
+}
+
+/**
+ * Gets the frame for the animation.
+ * @param {dict} elements - The elements to animate.
+ * @param {number} cycleIndex - The index of the cycle.
+ * @param {number} dotIndex - The index of the dot.
+ * @param {number} connectionIndex - The index of the connection.
+ * @returns {number} The frame for the animation.
+ */
+export const getFrame = (elements, cycleIndex, dotIndex, connectionIndex) => {
+    let frame = 0;
+    const cycleIndexOrMax = Math.min(cycleIndex, elements.contents);
+    for (let i = 0; i < cycleIndexOrMax; i++) {
+        for (let j = 0; j < elements.connectionAnimation.data[i].length; j++) {
+            for (let k = 0; k < ((1 / elements.connectionAnimation.options.speed) + 1); k++) {
+                frame++;
+            }
+        }
+    }
+
+    const connectionIndexOrMax = Math.min(connectionIndex, elements.connectionAnimation.data[cycleIndex].length);
+
+    for (let i = 0; i < connectionIndexOrMax; i++) {
+        for (let j = 0; j < ((1 / elements.connectionAnimation.options.speed) + 1); j++) {
+            frame++;
+        }
+    }
+
+    const dotIndexOrMax = Math.min(dotIndex, (1 / elements.connectionAnimation.options.speed));
+    frame += dotIndexOrMax;
+
+    frame++;
+    console.log('getFrame', 'frame', frame, 'cycleIndex', cycleIndex, 'connectionIndex', connectionIndex, 'dotIndex', dotIndex, 'maxCycleIndex', elements.contents, 'maxConnectionIndex', elements.connectionAnimation.data[cycleIndex].length, 'maxDotIndex', ((1 / elements.connectionAnimation.options.speed) + 1))
+
+    return frame
+}
+
+/**
+ * Multiplies two hex strings in GF(2^128).
+ * @param {string} hex0 - The first hexadecimal string to multiply.
+ * @param {string} hex1 - The second hexadecimal string to multiply.
+ * @returns {string} The resulting hexadecimal string after multiplication.
+ */
+export const multiplyGF128 = (hex0, hex1) => {
+    const R = bigInt("11100001" + "0".repeat(120), 2);
+    const X = bigInt(hex0, 16);
+    const Y = bigInt(hex1, 16);
+
+    let Z = bigInt(0);
+    let V = X;
+    for (let i = 0; i < 128; i++) {
+        const Yi = Y.shiftRight(i).and(1);
+        if (Yi.eq(1)) {
+            Z = Z.xor(V);
+        }
+        const V127 = V.shiftRight(127).and(1);
+        if (V127.eq(0)) {
+            V = V.shiftRight(1);
+        } else {
+            V = V.shiftRight(1).xor(R);
+        }
+    }
+    return Z.toString(16).padStart(hex0.length, '0');
 }
