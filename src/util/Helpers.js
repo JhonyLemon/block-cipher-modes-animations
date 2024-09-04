@@ -327,26 +327,11 @@ export const getAnimationIndices = (elements, frame) => {
                     cycleIndex = i;
                     connectionIndex = j;
                     dotIndex = k;
-                    console.log('getAnimationIndices', 'frame', frame,'cycleIndex', cycleIndex, 'connectionIndex', connectionIndex, 'dotIndex', dotIndex)
                     return {cycleIndex: cycleIndex, dotIndex: dotIndex, connectionIndex: connectionIndex};
                 }
             }
         }
     }
-    //
-    // let calculatedFrame = 0;
-    // for (let i = 0; i < elements.contents; i++) {
-    //     calculatedFrame = (i+1)*((1 / elements.connectionAnimation.options.speed)+1)*elements.connectionAnimation.data[i].length;
-    //     if (frame < calculatedFrame) {
-    //         cycleIndex = i;
-    //         dotIndex = frame % ((1 / elements.connectionAnimation.options.speed) + 1);
-    //         connectionIndex = Math.floor(frame / ((1 / elements.connectionAnimation.options.speed) + 1)) % elements.connectionAnimation.data[i].length;
-    //         console.log('getAnimationIndices', 'calculatedFrame', calculatedFrame, 'frame', frame, 'cycleIndex', cycleIndex, 'connectionIndex', connectionIndex, 'dotIndex', dotIndex)
-    //         break;
-    //     }
-    // }
-    // console.log('getAnimationIndices','cycleIndex', cycleIndex, 'connectionIndex', connectionIndex, 'dotIndex', dotIndex)
-    //
     return {cycleIndex: cycleIndex, dotIndex: dotIndex, connectionIndex: connectionIndex};
 }
 
@@ -381,7 +366,6 @@ export const getFrame = (elements, cycleIndex, dotIndex, connectionIndex) => {
     frame += dotIndexOrMax;
 
     frame++;
-    console.log('getFrame', 'frame', frame, 'cycleIndex', cycleIndex, 'connectionIndex', connectionIndex, 'dotIndex', dotIndex, 'maxCycleIndex', elements.contents, 'maxConnectionIndex', elements.connectionAnimation.data[cycleIndex].length, 'maxDotIndex', ((1 / elements.connectionAnimation.options.speed) + 1))
 
     return frame
 }

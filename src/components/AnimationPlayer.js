@@ -122,7 +122,6 @@ const canvasInit = (p) => {
         p.push();
         texts[animationParameters.animationCycle].forEach((text, i) => {
             const singleText = text[animationParameters.animationCycle];
-            // console.log(singleText, text, i, animationParameters.animationCycle, texts)
             p.fill(0);
             p.textStyle(p.NORMAL);
             p.textSize(elements.boxes[animationParameters.animationCycle][i].content.options.textSize);
