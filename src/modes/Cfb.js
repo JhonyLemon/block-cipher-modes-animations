@@ -21,10 +21,12 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                 content: {
                     data: ivData,
                     options: {
-                        textSize: 12,
+                            showTitle: true,
+                            textSize: 12,
                         onHoverInfo: true,
                         hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                         onHoverText: true,
+                            showText: true,
                         hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                     }
                 }
@@ -36,10 +38,12 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                 content: {
                     data: new Array(length).fill(key),
                     options: {
-                        textSize: 12,
+                            showTitle: true,
+                            textSize: 12,
                         onHoverInfo: true,
                         hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                         onHoverText: true,
+                            showText: true,
                         hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                     }
                 }
@@ -60,14 +64,16 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
             },
             {
                 pos: {x: 0.5, y: 0.4},
-                title: 'semiEncrypted',
+                title: 'Outcome of AES operation',
                 description: 'SemiEncrypted data',
                 content: {
                     data: semiEncrypted,
                     options: {
-                        textSize: 12,
+                            showTitle: true,
+                            textSize: 12,
                         onHoverInfo: false,
                         onHoverText: true,
+                            showText: true,
                         hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                     }
                 }
@@ -79,10 +85,12 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                 content: {
                     data: ciphertextData,
                     options: {
-                        textSize: 12,
+                            showTitle: true,
+                            textSize: 12,
                         onHoverInfo: true,
                         hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                         onHoverText: true,
+                            showText: true,
                         hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                     }
                 }
@@ -94,10 +102,12 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                 content: {
                     data: plaintextData,
                     options: {
-                        textSize: 12,
+                            showTitle: true,
+                            textSize: 12,
                         onHoverInfo: true,
                         hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                         onHoverText: true,
+                            showText: true,
                         hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                     }
                 }
@@ -198,7 +208,7 @@ const elements = (plaintextData, ivData, semiEncrypted, ciphertextData, key) => 
                 {animations: [6]}
             ]))],
             options: {
-                speed: 0.25
+                speed: 0.20
             }
         },
         contents: length

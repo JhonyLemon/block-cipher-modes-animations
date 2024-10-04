@@ -1,5 +1,9 @@
 import Modal from "react-modal";
 import {wa2str} from "../util/Helpers";
+import {DATA_MODAL_DESCRIPTION} from "../data/Constants";
+import {Tooltip} from "react-tooltip";
+import information from "../information.png";
+import React from "react";
 
 export const DataModal = ({isOpen, setOpen, data, file}) => {
     return (
@@ -43,8 +47,21 @@ export const DataModal = ({isOpen, setOpen, data, file}) => {
                     }
                 }
             >
-                <h2>{(file!==undefined && file!==null) ? 'File data' : 'Text data'}</h2>
-                {(file!==undefined && file!==null) ?
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <h2>{(file !== undefined && file !== null) ? 'File data' : 'Text data'}</h2>
+                    <img data-tooltip-id='dataDisplay' src={information} alt="Info"
+                         style={{height: '15px', width: '15px', marginLeft: '5px'}}/>
+                </div>
+                <Tooltip id='dataDisplay' variant={'dark'}>
+                    <div style={{
+                        maxWidth: '200px'
+                    }}
+                    >
+                        {DATA_MODAL_DESCRIPTION}
+                    </div>
+                </Tooltip>
+
+                {(file !== undefined && file !== null) ?
                     <button
                         style={
                             {

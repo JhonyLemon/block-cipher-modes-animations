@@ -21,10 +21,12 @@ const elements = (plaintextData, ivData, xoredData, ciphertextData, key) => {
                 content: {
                     data: plaintextData,
                     options: {
-                        textSize: 12,
+                            showTitle: true,
+                            textSize: 12,
                         onHoverInfo: true,
                         hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                         onHoverText: true,
+                            showText: true,
                         hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                     }
                 }
@@ -36,10 +38,12 @@ const elements = (plaintextData, ivData, xoredData, ciphertextData, key) => {
                     content: {
                         data: ivData,
                         options: {
+                            showTitle: true,
                             textSize: 12,
                             onHoverInfo: true,
                             hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                             onHoverText: true,
+                            showText: true,
                             hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                         }
                     }
@@ -60,14 +64,16 @@ const elements = (plaintextData, ivData, xoredData, ciphertextData, key) => {
                 },
                 {
                     pos: {x: 0.5, y: 0.4},
-                    title: 'XOR-ed',
+                    title: 'Outcome of XOR operation',
                     description: 'XOR-ed data',
                     content: {
                         data: xoredData,
                         options: {
+                            showTitle: true,
                             textSize: 12,
                             onHoverInfo: false,
                             onHoverText: true,
+                            showText: true,
                             hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                         }
                     }
@@ -79,10 +85,12 @@ const elements = (plaintextData, ivData, xoredData, ciphertextData, key) => {
                     content: {
                         data: ciphertextData,
                         options: {
+                            showTitle: true,
                             textSize: 12,
                             onHoverInfo: true,
                             hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
                             onHoverText: true,
+                            showText: true,
                             hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
                         }
                     }
@@ -94,10 +102,12 @@ const elements = (plaintextData, ivData, xoredData, ciphertextData, key) => {
                     content: {
                         data: new Array(length).fill(key),
                         options: {
+                            showTitle: true,
                             textSize: 12,
                             onHoverInfo: true,
                             hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                             onHoverText: true,
+                            showText: true,
                             hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                         }
                     }
@@ -198,7 +208,7 @@ const elements = (plaintextData, ivData, xoredData, ciphertextData, key) => {
                 {animations: [6]},
             ]))],
             options: {
-                speed: 0.25
+                speed: 0.20
             }
         },
         contents: length

@@ -22,148 +22,164 @@ const elements = (plaintextData, ivData, xoredPlainIv, newIVs, ciphertextData, k
                 content: {
                     data: plaintextData,
                     options: {
+                        showTitle: true,
                         textSize: 12,
                         onHoverInfo: true,
                         hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                         onHoverText: true,
+                        showText: true,
                         hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                     }
                 }
             },
-            {
-                pos: {x: 0.2, y: 0.25},
-                title: IV_TITLE,
-                description: IV_DESCRIPTION,
-                content: {
-                    data: ivData,
-                    options: {
-                        textSize: 12,
-                        onHoverInfo: true,
-                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
-                        onHoverText: true,
-                        hoverTextPos: TOOLTIP_POSITION.RIGHT.MIDDLE
+                {
+                    pos: {x: 0.2, y: 0.25},
+                    title: IV_TITLE,
+                    description: IV_DESCRIPTION,
+                    content: {
+                        data: ivData,
+                        options: {
+                            showTitle: true,
+                            textSize: 12,
+                            onHoverInfo: true,
+                            hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
+                            onHoverText: true,
+                            showText: true,
+                            hoverTextPos: TOOLTIP_POSITION.RIGHT.MIDDLE
+                        }
                     }
-                }
-            },
-            {
-                pos: {x: 0.5, y: 0.25},
-                title: XOR_TITLE,
-                description: XOR_DESCRIPTION,
-                content: {
-                    data: new Array(length).fill(XOR_BOX_CONTENT),
-                    options: {
-                        textSize: 15,
-                        onHoverInfo: true,
-                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
-                        onHoverText: false
+                },
+                {
+                    pos: {x: 0.5, y: 0.25},
+                    title: XOR_TITLE,
+                    description: XOR_DESCRIPTION,
+                    content: {
+                        data: new Array(length).fill(XOR_BOX_CONTENT),
+                        options: {
+                            textSize: 15,
+                            onHoverInfo: true,
+                            hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
+                            onHoverText: false
+                        }
                     }
-                }
-            },
-            {
-                pos: {x: 0.5, y: 0.4},
-                title: 'xored',
-                description: 'xored',
-                content: {
-                    data: xoredPlainIv,
-                    options: {
-                        textSize: 12,
-                        onHoverInfo: false,
-                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
-                        onHoverText: true,
-                        hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                },
+                {
+                    pos: {x: 0.5, y: 0.4},
+                    title: 'Outcome of XOR operation',
+                    description: 'xored',
+                    content: {
+                        data: xoredPlainIv,
+                        options: {
+                            showTitle: true,
+                            textSize: 12,
+                            onHoverInfo: false,
+                            hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
+                            onHoverText: true,
+                            showText: true,
+                            hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                        }
                     }
-                }
-            },
-            {
-                pos: {x: 0.5, y: 0.55},
-                title: AES_TITLE,
-                description: AES_DESCRIPTION,
-                content: {
-                    data: new Array(length).fill(AES_BOX_CONTENT),
-                    options: {
-                        textSize: 12,
-                        onHoverInfo: true,
-                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
-                        onHoverText: true,
-                        hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                },
+                {
+                    pos: {x: 0.5, y: 0.55},
+                    title: AES_TITLE,
+                    description: AES_DESCRIPTION,
+                    content: {
+                        data: new Array(length).fill(AES_BOX_CONTENT),
+                        options: {
+                            showTitle: false,
+                            textSize: 12,
+                            onHoverInfo: true,
+                            hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
+                            onHoverText: true,
+                            showText: false,
+                            hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                        }
                     }
-                }
-            },
-            {
-                pos: {x: 0.5, y: 0.7},
-                title: CIPHERTEXT_TITLE,
-                description: CIPHERTEXT_DESCRIPTION,
-                content: {
-                    data: ciphertextData,
-                    options: {
-                        textSize: 12,
-                        onHoverInfo: true,
-                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
-                        onHoverText: true,
-                        hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                },
+                {
+                    pos: {x: 0.5, y: 0.7},
+                    title: CIPHERTEXT_TITLE,
+                    description: CIPHERTEXT_DESCRIPTION,
+                    content: {
+                        data: ciphertextData,
+                        options: {
+                            showTitle: true,
+                            textSize: 12,
+                            onHoverInfo: true,
+                            hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
+                            onHoverText: true,
+                            showText: true,
+                            hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                        }
                     }
-                }
-            },
-            {
-                pos: {x: 0.2, y: 0.55},
-                title: KEY_TITLE,
-                description: KEY_DESCRIPTION,
-                content: {
-                    data: new Array(length).fill(key),
-                    options: {
-                        textSize: 12,
-                        onHoverInfo: true,
-                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
-                        onHoverText: true,
-                        hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                },
+                {
+                    pos: {x: 0.2, y: 0.55},
+                    title: KEY_TITLE,
+                    description: KEY_DESCRIPTION,
+                    content: {
+                        data: new Array(length).fill(key),
+                        options: {
+                            showTitle: true,
+                            textSize: 12,
+                            onHoverInfo: true,
+                            hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
+                            onHoverText: true,
+                            showText: true,
+                            hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                        }
                     }
-                }
-            },
-            {
-                pos: {x: 0.8, y: 0.7},
-                title: XOR_TITLE,
-                description: XOR_DESCRIPTION,
-                content: {
-                    data: new Array(length).fill(XOR_BOX_CONTENT),
-                    options: {
-                        textSize: 12,
-                        onHoverInfo: true,
-                        hoverInfoPos: TOOLTIP_POSITION.LEFT.BOTTOM,
-                        onHoverText: false,
-                        hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                },
+                {
+                    pos: {x: 0.8, y: 0.7},
+                    title: XOR_TITLE,
+                    description: XOR_DESCRIPTION,
+                    content: {
+                        data: new Array(length).fill(XOR_BOX_CONTENT),
+                        options: {
+                            showTitle: false,
+                            textSize: 12,
+                            onHoverInfo: true,
+                            hoverInfoPos: TOOLTIP_POSITION.LEFT.BOTTOM,
+                            onHoverText: false,
+                            hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                        }
                     }
-                }
-            },
-            {
-                pos: {x: 0.8, y: 0.85},
-                title: 'new IV',
-                description: 'new IV',
-                content: {
-                    data: newIVs,
-                    options: {
-                        textSize: 12,
-                        onHoverInfo: false,
-                        hoverInfoPos: TOOLTIP_POSITION.LEFT.BOTTOM,
-                        onHoverText: true,
-                        hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                },
+                {
+                    pos: {x: 0.8, y: 0.85},
+                    title: 'New '+IV_TITLE+', used in next block',
+                    description: 'new IV',
+                    content: {
+                        data: newIVs,
+                        options: {
+                            showTitle: true,
+                            textSize: 12,
+                            onHoverInfo: false,
+                            hoverInfoPos: TOOLTIP_POSITION.LEFT.BOTTOM,
+                            onHoverText: true,
+                            showText: true,
+                            hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                        }
                     }
-                }
-            },
-            {
-                pos: {x: 0.5, y: 0.85},
-                title: NEW_IV,
-                description: NEW_IV_DESCRIPTION,
-                content: {
-                    data: new Array(length).fill(NEW_IV),
-                    options: {
-                        textSize: 12,
-                        onHoverInfo: true,
-                        hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
-                        onHoverText: false,
-                        hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                },
+                {
+                    pos: {x: 0.5, y: 0.85},
+                    title: NEW_IV,
+                    description: NEW_IV_DESCRIPTION,
+                    content: {
+                        data: new Array(length).fill(NEW_IV),
+                        options: {
+                            showTitle: false,
+                            textSize: 12,
+                            onHoverInfo: true,
+                            hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
+                            onHoverText: false,
+                            hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
+                        }
                     }
-                }
-            }]))
+                }]))
         ],
         connections: [
             ...(new Array(length).fill([{
@@ -174,92 +190,92 @@ const elements = (plaintextData, ivData, xoredPlainIv, newIVs, ciphertextData, k
                 dotSize: 5,
                 dotColor: 'red'
             },
-            {
-                from: {boxId: 1, arrowOut: SIDE.RIGHT},
-                to: {boxId: 2, arrowIn: SIDE.LEFT},
-                connectionColor: 'black',
-                arrowSize: 10,
-                dotSize: 5,
-                dotColor: 'red'
-            },
-            {
-                from: {boxId: 2, arrowOut: SIDE.DOWN},
-                to: {boxId: 3, arrowIn: SIDE.UP},
-                connectionColor: 'black',
-                arrowSize: 10,
-                dotSize: 5,
-                dotColor: 'red'
-            },
-            {
-                from: {boxId: 3, arrowOut: SIDE.DOWN},
-                to: {boxId: 4, arrowIn: SIDE.UP},
-                connectionColor: 'black',
-                arrowSize: 10,
-                dotSize: 5,
-                dotColor: 'red'
-            },
-            {
-                from: {boxId: 4, arrowOut: SIDE.DOWN},
-                to: {boxId: 5, arrowIn: SIDE.UP},
-                connectionColor: 'black',
-                arrowSize: 10,
-                dotSize: 5,
-                dotColor: 'red'
-            },
-            {
-                from: {boxId: 6, arrowOut: SIDE.RIGHT},
-                to: {boxId: 4, arrowIn: SIDE.LEFT},
-                connectionColor: 'black',
-                arrowSize: 10,
-                dotSize: 5,
-                dotColor: 'red'
-            },
-            {
-                from: {boxId: 5, arrowOut: SIDE.RIGHT},
-                to: {boxId: 7, arrowIn: SIDE.LEFT},
-                connectionColor: 'black',
-                arrowSize: 10,
-                dotSize: 5,
-                dotColor: 'red'
-            },
+                {
+                    from: {boxId: 1, arrowOut: SIDE.RIGHT},
+                    to: {boxId: 2, arrowIn: SIDE.LEFT},
+                    connectionColor: 'black',
+                    arrowSize: 10,
+                    dotSize: 5,
+                    dotColor: 'red'
+                },
+                {
+                    from: {boxId: 2, arrowOut: SIDE.DOWN},
+                    to: {boxId: 3, arrowIn: SIDE.UP},
+                    connectionColor: 'black',
+                    arrowSize: 10,
+                    dotSize: 5,
+                    dotColor: 'red'
+                },
+                {
+                    from: {boxId: 3, arrowOut: SIDE.DOWN},
+                    to: {boxId: 4, arrowIn: SIDE.UP},
+                    connectionColor: 'black',
+                    arrowSize: 10,
+                    dotSize: 5,
+                    dotColor: 'red'
+                },
+                {
+                    from: {boxId: 4, arrowOut: SIDE.DOWN},
+                    to: {boxId: 5, arrowIn: SIDE.UP},
+                    connectionColor: 'black',
+                    arrowSize: 10,
+                    dotSize: 5,
+                    dotColor: 'red'
+                },
+                {
+                    from: {boxId: 6, arrowOut: SIDE.RIGHT},
+                    to: {boxId: 4, arrowIn: SIDE.LEFT},
+                    connectionColor: 'black',
+                    arrowSize: 10,
+                    dotSize: 5,
+                    dotColor: 'red'
+                },
+                {
+                    from: {boxId: 5, arrowOut: SIDE.RIGHT},
+                    to: {boxId: 7, arrowIn: SIDE.LEFT},
+                    connectionColor: 'black',
+                    arrowSize: 10,
+                    dotSize: 5,
+                    dotColor: 'red'
+                },
 
-            {
-                from: {boxId: 8, arrowOut: SIDE.LEFT},
-                to: {boxId: 9, arrowIn: SIDE.RIGHT},
-                connectionColor: 'black',
-                arrowSize: 10,
-                dotSize: 5,
-                dotColor: 'red'
-            },
-            {
-                from: {boxId: 7, arrowOut: SIDE.DOWN},
-                to: {boxId: 8, arrowIn: SIDE.UP},
-                connectionColor: 'black',
-                arrowSize: 10,
-                dotSize: 5,
-                dotColor: 'red'
-            },
-            {
-                from: {boxId: 0, arrowOut: SIDE.RIGHT},
-                to: {boxId: 7, arrowIn: SIDE.UP},
-                connectionColor: 'black',
-                arrowSize: 10,
-                dotSize: 5,
-                dotColor: 'red'
-            }]))
+                {
+                    from: {boxId: 8, arrowOut: SIDE.LEFT},
+                    to: {boxId: 9, arrowIn: SIDE.RIGHT},
+                    connectionColor: 'black',
+                    arrowSize: 10,
+                    dotSize: 5,
+                    dotColor: 'red'
+                },
+                {
+                    from: {boxId: 7, arrowOut: SIDE.DOWN},
+                    to: {boxId: 8, arrowIn: SIDE.UP},
+                    connectionColor: 'black',
+                    arrowSize: 10,
+                    dotSize: 5,
+                    dotColor: 'red'
+                },
+                {
+                    from: {boxId: 0, arrowOut: SIDE.RIGHT},
+                    to: {boxId: 7, arrowIn: SIDE.UP},
+                    connectionColor: 'black',
+                    arrowSize: 10,
+                    dotSize: 5,
+                    dotColor: 'red'
+                }]))
         ],
         connectionAnimation: {
             data: [
                 ...(new Array(length).fill([{animations: [0, 1]},
-                {animations: [2]},
-                {animations: [3]},
-                {animations: [4, 5]},
-                {animations: [6, 9]},
-                {animations: [8]},
-                {animations: [7]}]))
+                    {animations: [2]},
+                    {animations: [3]},
+                    {animations: [4, 5]},
+                    {animations: [6, 9]},
+                    {animations: [8]},
+                    {animations: [7]}]))
             ],
             options: {
-                speed: 0.25
+                speed: 0.20
             }
         },
         contents: length

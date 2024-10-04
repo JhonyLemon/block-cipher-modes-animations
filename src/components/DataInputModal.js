@@ -1,6 +1,9 @@
-import {useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import Modal from "react-modal";
 import {ab2wa, str2wa, wa2str} from "../util/Helpers";
+import information from "../information.png";
+import {Tooltip} from "react-tooltip";
+import {DATA_INPUT_MODAL_DESCRIPTION, DATA_MODAL_DESCRIPTION} from "../data/Constants";
 
 export const DataInputModal = ({isOpen, setOpen, onClose, previousData, previousFile}) => {
     const [textData, setTextData] = useState((previousFile!==undefined && previousData!==null) ? '' : wa2str(previousData));
@@ -56,23 +59,36 @@ export const DataInputModal = ({isOpen, setOpen, onClose, previousData, previous
                     }
                 }
             >
-                <select
-                    style={
-                        {
-                            margin: '10px 0',
-                            minHeight: '30px',
-                            minWidth: '500px',
-                            maxWidth: '80%'
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <select
+                        style={
+                            {
+                                margin: '10px 0',
+                                minHeight: '30px',
+                                minWidth: '500px',
+                                maxWidth: '80%'
+                            }
                         }
-                    }
-                    value={inputMode}
-                    onChange={event => {
-                        setInputMode(event.target.value);
+                        value={inputMode}
+                        onChange={event => {
+                            setInputMode(event.target.value);
+                        }}
+                    >
+                        <option value='Text'>Text</option>
+                        <option value='File'>File</option>
+                    </select>
+                    <img data-tooltip-id='dataInputDisplay' src={information} alt="Info"
+                         style={{height: '15px', width: '15px', marginLeft: '5px'}}/>
+                </div>
+                <Tooltip id='dataInputDisplay' variant={'dark'}>
+                    <div style={{
+                        maxWidth: '200px'
                     }}
-                >
-                    <option value='Text'>Text</option>
-                    <option value='File'>File</option>
-                </select>
+                    >
+                        {DATA_INPUT_MODAL_DESCRIPTION}
+                    </div>
+                </Tooltip>
+
                 {inputMode === 'Text' ? <textarea
                     value={textData}
                     onChange={event => {
@@ -124,7 +140,7 @@ export const DataInputModal = ({isOpen, setOpen, onClose, previousData, previous
                             }
                         }
                     >
-                        {(file!==undefined && file!==null) ? file.name : 'Choose file'}
+                        {(file !== undefined && file !== null) ? file.name : 'Choose file'}
                     </button>
                 </div> : null}
 

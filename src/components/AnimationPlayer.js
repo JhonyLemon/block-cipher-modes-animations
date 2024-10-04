@@ -126,6 +126,32 @@ const canvasInit = (p) => {
             p.textStyle(p.NORMAL);
             p.textSize(elements.boxes[animationParameters.animationCycle][i].content.options.textSize);
             p.text(singleText.data, singleText.x, singleText.y);
+
+            if (singleText.showTitle) {
+                p.push();
+                const title = elements.boxes[animationParameters.animationCycle][i].title;
+                p.textSize(elements.boxes[animationParameters.animationCycle][i].content.options.textSize/2);
+                const boxSize = singleText.boxSize
+                p.text(title, singleText.x, boxSize.y + p.textAscent());
+                p.pop();
+            }
+
+            if (singleText.showText) {
+                singleText.letters2.forEach((letter2, j) => {
+                    const decoded = hex2str(letter2.data);
+                    p.fill(0);
+                    p.textStyle(p.NORMAL);
+
+                    p.textSize(elements.boxes[animationParameters.animationCycle][i].content.options.textSize/2);
+                    p.text(decoded, letter2.boundingBox.x + (letter2.width/2), letter2.boundingBox.y + letter2.height + 5);
+
+                    p.push();
+                    p.strokeWeight(0.5);
+                    p.stroke('black');
+                    p.line(letter2.boundingBox.x + 2, letter2.boundingBox.y + letter2.height-2, letter2.boundingBox.x + letter2.width - 2, letter2.boundingBox.y + letter2.height - 2);
+                    p.pop();
+                });
+            }
         });
         p.pop();
     }
@@ -149,7 +175,6 @@ const canvasInit = (p) => {
                     p.line(conn.points[j - 1].x, conn.points[j - 1].y, point.x, point.y);
                 }
             });
-            // p.line(conn.start.x, conn.start.y, conn.end.x, conn.end.y);
 
             p.push();
             p.noStroke();
@@ -166,9 +191,11 @@ const canvasInit = (p) => {
         p.push();
         dots[animationParameters.animationCycle][animationParameters.animationIndex].forEach((dotConnection, i) => {
             const dot = dotConnection[animationParameters.dotFrame];
-            p.stroke(dot.dotColor);
-            p.strokeWeight(dot.dotSize);
-            p.point(dot.x, dot.y);
+            if (dot !== undefined) {
+                p.stroke(dot.dotColor);
+                p.strokeWeight(dot.dotSize);
+                p.point(dot.x, dot.y);
+            }
         });
         p.pop();
     }
@@ -302,6 +329,14 @@ const canvasInit = (p) => {
                         width: p.textWidth(data),
                         height: textHeight,
                         box: i,
+                        boxSize: {
+                            x: x- (boxWidth / 2),
+                            y: y - (boxHeight / 2),
+                            width: boxWidth,
+                            height: boxHeight
+                        },
+                        showText: box.content.options?.showText,
+                        showTitle: box.content.options?.showTitle,
                         boundingBox: {
                             x: x - (p.textWidth(data) / 2),
                             y: y - ((textHeight) / 2),

@@ -164,6 +164,7 @@ const App = () => {
                 isOpen={isDataInputModalOpen}
                 setOpen={setDataInputModalOpen}
                 onClose={(data, isFile) => {
+                    console.log(data);
                     setData(data);
                     setFile(isFile);
                 }}

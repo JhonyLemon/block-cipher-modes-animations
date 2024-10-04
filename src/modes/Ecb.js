@@ -22,10 +22,12 @@ const elements = (plaintextData, ciphertextData, key) => {
                     content: {
                         data: plaintextData,
                         options: {
+                            showTitle: true,
                             textSize: 12,
                             onHoverInfo: true,
                             hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                             onHoverText: true,
+                            showText: true,
                             hoverTextPos: TOOLTIP_POSITION.BOTTOM.MIDDLE
                         }
                     }
@@ -37,10 +39,12 @@ const elements = (plaintextData, ciphertextData, key) => {
                     content: {
                         data: new Array(length).fill(key),
                         options: {
+                            showTitle: true,
                             textSize: 12,
                             onHoverInfo: true,
                             hoverInfoPos: TOOLTIP_POSITION.RIGHT.TOP,
                             onHoverText: true,
+                            showText: true,
                             hoverTextPos: TOOLTIP_POSITION.RIGHT.MIDDLE
                         }
                     }
@@ -66,10 +70,12 @@ const elements = (plaintextData, ciphertextData, key) => {
                     content: {
                         data: ciphertextData,
                         options: {
+                            showTitle: true,
                             textSize: 12,
                             onHoverInfo: true,
                             hoverInfoPos: TOOLTIP_POSITION.RIGHT.BOTTOM,
                             onHoverText: true,
+                            showText: true,
                             hoverTextPos: TOOLTIP_POSITION.TOP.MIDDLE
                         }
                     }
@@ -112,7 +118,7 @@ const elements = (plaintextData, ciphertextData, key) => {
                 ]))
             ],
             options: {
-                speed: 0.25
+                speed: 0.20
             }
         },
         contents: length
