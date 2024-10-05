@@ -48,7 +48,7 @@ export const DataModal = ({isOpen, setOpen, data, file}) => {
                 }
             >
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <h2>{(file !== undefined && file !== null) ? 'File data' : 'Text data'}</h2>
+                    <h2>Data for encryption</h2>
                     <img data-tooltip-id='dataDisplay' src={information} alt="Info"
                          style={{height: '15px', width: '15px', marginLeft: '5px'}}/>
                 </div>
