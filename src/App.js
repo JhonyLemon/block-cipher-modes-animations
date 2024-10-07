@@ -117,7 +117,7 @@ const App = () => {
                     }
                     onClick={() => setDataModalOpen(true)}
                 >
-                    Show data
+                    Show plaintext
                 </button>
                 <button
                     style={
@@ -130,7 +130,7 @@ const App = () => {
                     }
                     onClick={() => setDataInputModalOpen(true)}
                 >
-                    Refresh data
+                    Edit plaintext
                 </button>
                 <button
                     style={
@@ -143,7 +143,7 @@ const App = () => {
                     }
                     onClick={() => setCipherDataModalOpen(true)}
                 >
-                    Cipher data
+                    Encryption settings
                 </button>
             </div>
             <CipherDataInputModal

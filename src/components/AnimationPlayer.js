@@ -545,7 +545,7 @@ export const AnimationPlayer = ({elements, elementsHash}) => {
             }
         }
         setFrameCount(frames);
-    }, [elementsHash]);
+    }, [elementsHash, elements.connectionAnimation.data, elements.connectionAnimation.options.speed, elements.contents]);
 
     useInterval(() => {
         if (isPlaying) {
