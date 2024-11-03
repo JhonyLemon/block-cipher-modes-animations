@@ -76,12 +76,14 @@ const App = () => {
                     {
                         display: 'flex',
                         flexDirection: 'row',
-                        alignItems: 'center'
+                        alignItems: 'flex-end',
+                        gap: '5px',
+                        margin: '10px 0',
                     }
                 }
             >
                 <img data-tooltip-id='mode' src={information} alt="Info"
-                         style={{height: '25px', width: '25px', marginRight: '5px'}}/>
+                         style={{height: '30px', width: '30px'}}/>
                 <Tooltip id='mode' variant={'dark'}>
                     <div style={{
                         maxWidth: '200px'
@@ -90,26 +92,36 @@ const App = () => {
                         {[MODE_DESCRIPTION,'',mode.description].map((line, index) => (<p key={index}>{line}</p>))}
                     </div>
                 </Tooltip>
-                <Select
-                    defaultSelected={0}
-                    options={AVAILABLE_MODES}
-                    onChange={selectedMode => {
-                        setMode(selectedMode)
-                    }}
-                    style={
-                        {
-                            margin: '10px 0',
-                            minHeight: '30px',
-                            minWidth: '300px',
-                            maxWidth: '80%'
+                <div style={{
+                    margin: '0px 0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    justifyContent: 'center'
+                }}>
+                    <label style={{
+                        fontSize: '10px',
+                        margin: '0 0 1px 0'
+                    }}>Select encryption mode</label>
+                    <Select
+                        defaultSelected={0}
+                        options={AVAILABLE_MODES}
+                        onChange={selectedMode => {
+                            setMode(selectedMode)
+                        }}
+                        style={
+                            {
+                                minHeight: '30px',
+                                minWidth: '300px',
+                                maxWidth: '80%'
+                            }
                         }
-                    }
-                >
-                </Select>
+                    >
+                    </Select>
+                </div>
                 <button
                     style={
                         {
-                            margin: '10px 0',
                             minHeight: '30px',
                             minWidth: '100px',
                             maxWidth: '20%'
@@ -122,7 +134,6 @@ const App = () => {
                 <button
                     style={
                         {
-                            margin: '10px 0',
                             minHeight: '30px',
                             minWidth: '100px',
                             maxWidth: '20%'
@@ -135,7 +146,6 @@ const App = () => {
                 <button
                     style={
                         {
-                            margin: '10px 0',
                             minHeight: '30px',
                             minWidth: '100px',
                             maxWidth: '20%'

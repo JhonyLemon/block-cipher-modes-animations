@@ -18,39 +18,39 @@ export const GCM_DESCRIPTION = 'The Galois/Counter mode is an authenticated encr
 
 export const AVAILABLE_MODES = {
     ECB: {
-        name: 'ECB', description: ECB_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
+        name: 'Electronic Codebook (ECB)', description: ECB_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
             return ecb(data, key, iv, blockSize, padding);
         }
     },
     CBC: {
-        name: 'CBC', description: CBC_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
+        name: 'Cipher Block Chaining (CBC)', description: CBC_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
             return cbc(data, key, iv, blockSize, padding);
         }
     },
     CFB: {
-        name: 'CFB', description: CFB_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
+        name: 'Cipher Feedback (CFB)', description: CFB_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
             return cfb(data, key, iv, blockSize, padding);
         }
     },
     OFB: {
-        name: 'OFB', description: OFB_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
+        name: 'Output Feedback (OFB)', description: OFB_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
             return ofb(data, key, iv, blockSize, padding);
         }
     },
     PCBC: {
-        name: 'PCBC',
+        name: 'Propagating cipher block chaining (PCBC)',
         description: PCBC_DESCRIPTION,
         animation: (data, key, iv, blockSize, padding) => {
             return pcbc(data, key, iv, blockSize, padding);
         }
     },
     CTR: {
-        name: 'CTR', description: CTR_MODE_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
+        name: 'Counter (CTR)', description: CTR_MODE_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
             return ctr(data, key, iv, blockSize, padding);
         }
     },
     GCM: {
-        name: 'GCM', description: GCM_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
+        name: 'Galois/Counter Mode (GCM)', description: GCM_DESCRIPTION, animation: (data, key, iv, blockSize, padding) => {
             return gcm(data, key, iv, blockSize, padding);
         }
     },
