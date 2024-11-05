@@ -137,5 +137,5 @@ export const NEW_BLOCK_DESCRIPTION = 'Block of data that is used in next data bl
 export const OLD_BLOCK_DESCRIPTION = 'Block of data that is generated in previous data block encryption';
 export const LENGTH_C_DESCRIPTION = 'Length of data that is used in encryption process.';
 export const AUTH_TAG_DESCRIPTION = 'Authentication tag is used to verify the integrity of the data and authenticate the sender. It is generated during the encryption process and is sent along with the ciphertext.';
-export const DATA_MODAL_DESCRIPTION = 'This modal allows you to view input data that will be used in encryption process, to edit it use \"Refresh data\" button.';
+export const DATA_MODAL_DESCRIPTION = 'This modal allows you to view input data that will be used in encryption process, to edit it use \"Edit plaintext\" button.';
 export const DATA_INPUT_MODAL_DESCRIPTION = 'This modal allows you to input or edit data that will be used in encryption process.';
