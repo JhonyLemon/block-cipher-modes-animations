@@ -1,9 +1,11 @@
-import {encrypt, slice, wa2hex, wa2str} from "../util/Helpers";
+import {encrypt, slice, wa2hex} from "../util/Helpers";
 import {SIDE, TOOLTIP_POSITION} from "../components/AnimationPlayer";
 import {
     AES_BOX_CONTENT,
     AES_DESCRIPTION,
-    AES_TITLE, CIPHERTEXT_DESCRIPTION, CIPHERTEXT_TITLE,
+    AES_TITLE,
+    CIPHERTEXT_DESCRIPTION,
+    CIPHERTEXT_TITLE,
     KEY_DESCRIPTION,
     KEY_TITLE,
     PLAINTEXT_DESCRIPTION,
@@ -11,10 +13,8 @@ import {
 } from "../data/Constants";
 
 const elements = (plaintextData, ciphertextData, key) => {
-    const startTime = performance.now()
-
     const length = Math.max(plaintextData.length, ciphertextData.length);
-    const ele = {
+    return {
         boxes: [
             ...(new Array(length).fill([
                 {
@@ -125,27 +125,14 @@ const elements = (plaintextData, ciphertextData, key) => {
         },
         contents: length
     };
-    const endTime = performance.now()
-    console.log(`Call to ecb data took ${endTime - startTime} milliseconds`)
-    return ele;
 }
 
 export const ecb = (data, key, iv, blockSize, padding) => {
-    const startTime = performance.now()
     const paddedData = padding.pad(data, blockSize);
-    console.log('PADDED DATA')
     const splicedData = slice(paddedData, blockSize);
-    console.log('SPLICED DATA')
     const plaintextData = splicedData.map((d) => wa2hex(d));
-    console.log('PLAINTEXT DATA')
     const ciphertextData = splicedData.map((d) => wa2hex(d))
         .map((d) => encrypt(d, key));
-    console.log('CIPHERTEXT DATA')
 
-    const ele =  elements(plaintextData, ciphertextData, key);
-    console.log('ELEMENTS')
-
-    const endTime = performance.now()
-    console.log(`Call to ecb data took ${endTime - startTime} milliseconds`)
-    return ele;
+    return elements(plaintextData, ciphertextData, key);
 }

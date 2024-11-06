@@ -48,15 +48,6 @@ const App = () => {
     const [elementsHash, setElementsHash] = useState(0);
 
     useEffect(() => {
-        const startTime = performance.now()
-        // mode.animation(data,key,iv,blockSize,padding).then((elements) => {
-        //     const newElementsHash = elementsHash+1;
-        //     if (newElementsHash !== elementsHash) {
-        //         setElements(elements);
-        //         setElementsHash(newElementsHash);
-        //     }
-        // });
-
         const processElements = async () => {
             return  mode.animation(data,key,iv,blockSize,padding);
         };
@@ -68,8 +59,6 @@ const App = () => {
                 setElementsHash(newElementsHash);
             }
         });
-        const endTime = performance.now()
-        console.log(`Call to main App change data took ${endTime - startTime} milliseconds`)
     }, [key, iv, blockSize, padding, mode, data]);
 
     return (
@@ -194,7 +183,6 @@ const App = () => {
                         return [data, isFile];
                     }
                     processNewData(data, isFile).then(([data, isFile]) => {
-                        console.log(data);
                         setFile(isFile);
                         setData(data);
                     });

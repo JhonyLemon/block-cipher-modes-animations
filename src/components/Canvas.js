@@ -391,8 +391,6 @@ const Sketch = (p) => {
     };
 
     p.setup = () => {
-        const startTime = performance.now()
-
         p.createCanvas(canvas.width, canvas.height);
         p.background(240);
         p.textAlign(p.CENTER, p.CENTER);
@@ -402,14 +400,9 @@ const Sketch = (p) => {
         connectionsInit()
         connectionsAnimationsInit()
         isSetup = true;
-
-        const endTime = performance.now()
-        console.log(`Call to setup took ${endTime - startTime} milliseconds`)
     }
 
     p.updateWithProps = (props) => {
-        const startTime = performance.now()
-
         elements = props.elements;
         const isNewHash = elementsHash !== props.elementsHash;
 
@@ -430,8 +423,6 @@ const Sketch = (p) => {
         const canvasResolution = VIRTUAL_RESOLUTIONS["480p"]
         canvas.scale = {x: canvas.width / canvasResolution.width, y: canvas.height / canvasResolution.height};
 
-        const endTime = performance.now()
-        console.log(`Call to updateWithProps took ${endTime - startTime} milliseconds`)
     }
 
     p.mouseMoved = () => {
