@@ -45,16 +45,32 @@ const App = () => {
     Modal.setAppElement('#root');
 
     const [elements, setElements] = useState(mode.animation(data,key,iv,blockSize,padding));
-    const [elementsHash, setElementsHash] = useState(sha1(elements));
+    const [elementsHash, setElementsHash] = useState(0);
 
     useEffect(() => {
-        const newElements = mode.animation(data,key,iv,blockSize,padding);
-        const newElementsHash = sha1(newElements);
-        if (newElementsHash !== elementsHash) {
-            setElements(newElements);
-            setElementsHash(newElementsHash);
-        }
-    }, [key, iv, blockSize, padding, mode, data, file]);
+        const startTime = performance.now()
+        // mode.animation(data,key,iv,blockSize,padding).then((elements) => {
+        //     const newElementsHash = elementsHash+1;
+        //     if (newElementsHash !== elementsHash) {
+        //         setElements(elements);
+        //         setElementsHash(newElementsHash);
+        //     }
+        // });
+
+        const processElements = async () => {
+            return  mode.animation(data,key,iv,blockSize,padding);
+        };
+
+        processElements().then((newElements) => {
+            const newElementsHash = elementsHash+1;
+            if (newElementsHash !== elementsHash) {
+                setElements(newElements);
+                setElementsHash(newElementsHash);
+            }
+        });
+        const endTime = performance.now()
+        console.log(`Call to main App change data took ${endTime - startTime} milliseconds`)
+    }, [key, iv, blockSize, padding, mode, data]);
 
     return (
         <div
@@ -174,9 +190,14 @@ const App = () => {
                 isOpen={isDataInputModalOpen}
                 setOpen={setDataInputModalOpen}
                 onClose={(data, isFile) => {
-                    console.log(data);
-                    setData(data);
-                    setFile(isFile);
+                    const processNewData = async (data, isFile) => {
+                        return [data, isFile];
+                    }
+                    processNewData(data, isFile).then(([data, isFile]) => {
+                        console.log(data);
+                        setFile(isFile);
+                        setData(data);
+                    });
                 }}
                 previousData={data}
                 previousIsFile={file}
@@ -196,7 +217,8 @@ const App = () => {
                     }
                 }
             >
-                <AnimationPlayer elements={elements} elementsHash={elementsHash}/>
+                {elementsHash===0 ? <div>Loading...</div> : <AnimationPlayer elements={elements} elementsHash={elementsHash}/>}
+
             </div>
 
         </div>

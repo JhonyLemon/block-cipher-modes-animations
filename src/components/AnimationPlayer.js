@@ -120,14 +120,9 @@ export const AnimationPlayer = ({elements, elementsHash}) => {
             alignItems: "center"
         }
     }>
-        {/*<ReactP5Wrapper*/}
-        {/*    sketch={canvasInit}*/}
-        {/*    elements={elements}*/}
-        {/*    frame={frame}*/}
-        {/*    viewport={viewport}*/}
-        {/*/>*/}
         <Canvas
             elements={elements}
+            elementsHash={elementsHash}
             frame={frame}
             viewport={viewport}
         />

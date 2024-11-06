@@ -114,6 +114,7 @@ export const DataInputModal = ({isOpen, setOpen, onClose, previousData, previous
                         ref={inputFile}
                         style={{display: 'none'}}
                         onChange={event => {
+                            const startTime = performance.now()
                             const tempFile = event.target.files[0]
                             if (tempFile) {
                                 fileReader.readAsArrayBuffer(tempFile);
@@ -122,6 +123,8 @@ export const DataInputModal = ({isOpen, setOpen, onClose, previousData, previous
                                     setFile(tempFile);
                                 }
                             }
+                            const endTime = performance.now()
+                            console.log(`Call to file load took ${endTime - startTime} milliseconds`)
                         }}
                     />
                     <button

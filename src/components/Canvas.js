@@ -13,6 +13,7 @@ import p5 from "p5";
 
 const Sketch = (p) => {
     let elements = {};
+    let elementsHash = null;
     let icon = null;
     let boxes = [];
     let icons = [];
@@ -390,6 +391,8 @@ const Sketch = (p) => {
     };
 
     p.setup = () => {
+        const startTime = performance.now()
+
         p.createCanvas(canvas.width, canvas.height);
         p.background(240);
         p.textAlign(p.CENTER, p.CENTER);
@@ -399,10 +402,26 @@ const Sketch = (p) => {
         connectionsInit()
         connectionsAnimationsInit()
         isSetup = true;
+
+        const endTime = performance.now()
+        console.log(`Call to setup took ${endTime - startTime} milliseconds`)
     }
 
     p.updateWithProps = (props) => {
+        const startTime = performance.now()
+
         elements = props.elements;
+        const isNewHash = elementsHash !== props.elementsHash;
+
+        if (isNewHash) {
+            elementsHash = props.elementsHash;
+            if (isSetup) {
+                boxesTextIconInit()
+                connectionsInit()
+                connectionsAnimationsInit()
+            }
+            console.log(boxes, texts, icons, connections, dots)
+        }
 
         const animationIndeces = getAnimationIndices(elements, props.frame);
         animationParameters = {animationCycle: animationIndeces.cycleIndex, animationIndex: animationIndeces.connectionIndex, dotFrame: animationIndeces.dotIndex};
@@ -411,11 +430,8 @@ const Sketch = (p) => {
         const canvasResolution = VIRTUAL_RESOLUTIONS["480p"]
         canvas.scale = {x: canvas.width / canvasResolution.width, y: canvas.height / canvasResolution.height};
 
-        if (isSetup) {
-            boxesTextIconInit()
-            connectionsInit()
-            connectionsAnimationsInit()
-        }
+        const endTime = performance.now()
+        console.log(`Call to updateWithProps took ${endTime - startTime} milliseconds`)
     }
 
     p.mouseMoved = () => {
@@ -451,7 +467,7 @@ const Sketch = (p) => {
     }
 }
 
-export const Canvas = ({elements, frame, viewport}) => {
+export const Canvas = ({elements, elementsHash, frame, viewport}) => {
     const canvasRef = useRef();
     const p5Ref = useRef();
 
@@ -464,7 +480,7 @@ export const Canvas = ({elements, frame, viewport}) => {
 
     useEffect(() => {
         if (p5Ref) {
-            p5Ref.current.updateWithProps({elements, frame, viewport});
+            p5Ref.current.updateWithProps({elements, elementsHash, frame, viewport});
         }
     }, [elements, frame, viewport]);
 
