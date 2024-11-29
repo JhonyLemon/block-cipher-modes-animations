@@ -33,7 +33,7 @@ const Sketch = (p) => {
 
     const boxesDraw = (boxes) => {
         p.push();
-        boxes[animationParameters.animationCycle].forEach((box, i) => {
+        boxes[0].forEach((box, i) => {
             p.fill(255);
             p.rect(box.x, box.y, box.width, box.height);
         });
@@ -42,7 +42,7 @@ const Sketch = (p) => {
 
     const textsDraw = (texts) => {
         p.push();
-        texts[animationParameters.animationCycle].forEach((text, i) => {
+        texts[0].forEach((text, i) => {
             const singleText = text[animationParameters.animationCycle];
             p.fill(0);
             p.textStyle(p.NORMAL);
@@ -79,7 +79,7 @@ const Sketch = (p) => {
     }
 
     const iconsDraw = (icons) => {
-        icons[animationParameters.animationCycle].forEach((iconParams, i) => {
+        icons[0].forEach((iconParams, i) => {
             if (elements.boxes[animationParameters.animationCycle][i].content.options.onHoverInfo) {
                 p.image(icon, iconParams.x, iconParams.y, iconParams.width, iconParams.height);
             }
@@ -88,7 +88,7 @@ const Sketch = (p) => {
 
     const connectionsDraw = (connections) => {
         p.push();
-        connections[animationParameters.animationCycle].forEach((conn, i) => {
+        connections[0].forEach((conn, i) => {
             const connection = elements.connections[animationParameters.animationCycle][i];
             p.stroke(connection.connectionColor);
 
@@ -111,7 +111,7 @@ const Sketch = (p) => {
 
     const dotsDraw = (dots) => {
         p.push();
-        dots[animationParameters.animationCycle][animationParameters.animationIndex].forEach((dotConnection, i) => {
+        dots[0][animationParameters.animationIndex].forEach((dotConnection, i) => {
             const dot = dotConnection[animationParameters.dotFrame];
             if (dot !== undefined) {
                 p.stroke(dot.dotColor);
@@ -126,7 +126,7 @@ const Sketch = (p) => {
         if (hoverInfo.icon !== undefined && Object.keys(hoverInfo.icon).length > 0) {
             p.push();
             p.fill(255);
-            const box = boxes[animationParameters.animationCycle][hoverInfo.icon.box];
+            const box = boxes[0][hoverInfo.icon.box];
             const words = elements.boxes[animationParameters.animationCycle][hoverInfo.icon.box].description.split(' ');
             const lines = [];
             let currentLine = '';
@@ -219,7 +219,7 @@ const Sketch = (p) => {
         boxes = [];
         texts = [];
         icons = [];
-        elements.boxes.forEach((boxesList) => {
+        const boxesList = elements.boxes[animationParameters.animationCycle];
             const boxList = [];
             const textList = [];
             const iconList = [];
@@ -320,16 +320,16 @@ const Sketch = (p) => {
             boxes.push(boxList);
             texts.push(textList);
             icons.push(iconList);
-        });
     }
 
     const connectionsInit = () => {
         connections = [];
-        elements.connections.forEach((connectionsList, i) => {
+        const connectionsList = elements.connections[animationParameters.animationCycle];
+
             const connectionList = [];
             connectionsList.forEach((conn, j) => {
-                const fromBox = boxes[i][conn.from.boxId];
-                const toBox = boxes[i][conn.to.boxId];
+                const fromBox = boxes[0][conn.from.boxId];
+                const toBox = boxes[0][conn.to.boxId];
                 const startSide = conn.from.arrowOut;
                 const endSide = conn.to.arrowIn;
                 const start = {
@@ -356,25 +356,24 @@ const Sketch = (p) => {
                 connectionList.push(connection);
             });
             connections.push(connectionList);
-        });
     }
 
     const connectionsAnimationsInit = () => {
         dots = [];
-        elements.connectionAnimation.data.forEach((dataList, i) => {
+        const dataList = elements.connectionAnimation.data[animationParameters.animationCycle];
             const dotList = [];
             dataList.forEach((data, j) => {
                 const dotConnection = []
                 data.animations.forEach((connectionIndex, k) => {
                     const frames = []
                     for (let k = 0; k <= 1; k = k + elements.connectionAnimation.options.speed) {
-                        const line = lengthFromPoints(connections[i][connectionIndex].points)
-                        const point = pointOnLine(connections[i][connectionIndex].points, line, line * k)
+                        const line = lengthFromPoints(connections[0][connectionIndex].points)
+                        const point = pointOnLine(connections[0][connectionIndex].points, line, line * k)
                         const dot = {
                             x: point.x,
                             y: point.y,
-                            dotSize: elements.connections[i][connectionIndex].dotSize,
-                            dotColor: elements.connections[i][connectionIndex].dotColor
+                            dotSize: elements.connections[animationParameters.animationCycle][connectionIndex].dotSize,
+                            dotColor: elements.connections[animationParameters.animationCycle][connectionIndex].dotColor
                         }
                         frames.push(dot);
                     }
@@ -383,7 +382,6 @@ const Sketch = (p) => {
                 dotList.push(dotConnection);
             });
             dots.push(dotList);
-        });
     }
 
     p.preload = () => {
@@ -396,6 +394,8 @@ const Sketch = (p) => {
         p.textAlign(p.CENTER, p.CENTER);
         // p.noLoop()
 
+        animationParameters = {animationCycle: 0, animationIndex: 0, dotFrame: 0};
+
         boxesTextIconInit();
         connectionsInit()
         connectionsAnimationsInit()
@@ -406,16 +406,6 @@ const Sketch = (p) => {
         elements = props.elements;
         const isNewHash = elementsHash !== props.elementsHash;
 
-        if (isNewHash) {
-            elementsHash = props.elementsHash;
-            if (isSetup) {
-                boxesTextIconInit()
-                connectionsInit()
-                connectionsAnimationsInit()
-            }
-            console.log(boxes, texts, icons, connections, dots)
-        }
-
         const animationIndeces = getAnimationIndices(elements, props.frame);
         animationParameters = {animationCycle: animationIndeces.cycleIndex, animationIndex: animationIndeces.connectionIndex, dotFrame: animationIndeces.dotIndex};
         const size = Math.min(props.viewport.width / 16, props.viewport.height / 9);
@@ -423,6 +413,11 @@ const Sketch = (p) => {
         const canvasResolution = VIRTUAL_RESOLUTIONS["480p"]
         canvas.scale = {x: canvas.width / canvasResolution.width, y: canvas.height / canvasResolution.height};
 
+        if(isSetup) {
+            boxesTextIconInit()
+            connectionsInit()
+            connectionsAnimationsInit()
+        }
     }
 
     p.mouseMoved = () => {
